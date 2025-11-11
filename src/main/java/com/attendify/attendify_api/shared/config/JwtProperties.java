@@ -1,4 +1,4 @@
-package com.attendify.attendify_api.config;
+package com.attendify.attendify_api.shared.config;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Configuration;

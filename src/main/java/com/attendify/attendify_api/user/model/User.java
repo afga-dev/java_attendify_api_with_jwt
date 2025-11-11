@@ -1,4 +1,4 @@
-package com.attendify.attendify_api.model;
+package com.attendify.attendify_api.user.model;
 
 import java.util.HashSet;
 import java.util.Set;

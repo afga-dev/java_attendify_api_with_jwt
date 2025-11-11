@@ -1,11 +1,11 @@
-package com.attendify.attendify_api.security;
+package com.attendify.attendify_api.user.security;
 
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
-import com.attendify.attendify_api.repository.UserRepository;
+import com.attendify.attendify_api.user.repository.UserRepository;
 
 import lombok.RequiredArgsConstructor;
 
@@ -18,6 +18,6 @@ public class CustomUserDetailsService implements UserDetailsService {
     public UserDetails loadUserByUsername(String email) {
         return userRepository.findByEmail(email)
                 .map(CustomUserDetails::new)
-                .orElseThrow(() -> new UsernameNotFoundException("User not found"));
+                .orElseThrow(() -> new UsernameNotFoundException("User not found with email: " + email));
     }
 }

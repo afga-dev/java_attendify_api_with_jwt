@@ -1,4 +1,4 @@
-package com.attendify.attendify_api.security;
+package com.attendify.attendify_api.shared.jwt;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;

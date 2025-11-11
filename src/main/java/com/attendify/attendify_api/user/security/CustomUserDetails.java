@@ -1,4 +1,4 @@
-package com.attendify.attendify_api.security;
+package com.attendify.attendify_api.user.security;
 
 import java.util.Collection;
 import java.util.stream.Collectors;
@@ -7,7 +7,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
-import com.attendify.attendify_api.model.User;
+import com.attendify.attendify_api.user.model.User;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;

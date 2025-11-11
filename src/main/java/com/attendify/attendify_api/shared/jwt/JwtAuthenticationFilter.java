@@ -1,4 +1,4 @@
-package com.attendify.attendify_api.security;
+package com.attendify.attendify_api.shared.jwt;
 
 import java.io.IOException;
 
@@ -9,8 +9,6 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
-
-import com.attendify.attendify_api.security.jwt.JwtService;
 
 import io.jsonwebtoken.JwtException;
 import jakarta.servlet.FilterChain;
@@ -33,7 +31,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             throws ServletException, IOException {
         final String authorizationHeader = request.getHeader(SecurityConstants.AUTHORIZATION_HEADER);
         if (authorizationHeader == null
-                || !authorizationHeader.trim().toLowerCase().startsWith(SecurityConstants.BEARER_PREFIX)) {
+                || !authorizationHeader.startsWith(SecurityConstants.BEARER_PREFIX)) {
             filterChain.doFilter(request, response);
             return;
         }

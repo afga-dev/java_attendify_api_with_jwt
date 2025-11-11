@@ -1,4 +1,4 @@
-package com.attendify.attendify_api.security.jwt;
+package com.attendify.attendify_api.shared.jwt;
 
 import java.util.Date;
 import java.util.Map;
@@ -9,7 +9,7 @@ import javax.crypto.SecretKey;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
-import com.attendify.attendify_api.config.JwtProperties;
+import com.attendify.attendify_api.shared.config.JwtProperties;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
