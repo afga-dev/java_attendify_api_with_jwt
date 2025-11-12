@@ -3,8 +3,8 @@ package com.attendify.attendify_api.auth.service;
 import java.util.Set;
 
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -51,7 +51,7 @@ public class AuthenticationService {
                                                 request.getPassword()));
 
                 User user = userRepository.findByEmail(request.getEmail())
-                                .orElseThrow(() -> new UsernameNotFoundException(
+                                .orElseThrow(() -> new BadCredentialsException(
                                                 "User not found with email: " + request.getEmail()));
                 var jwt = jwtService.generateToken(getUser(user));
 

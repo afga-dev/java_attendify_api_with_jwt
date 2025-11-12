@@ -12,7 +12,9 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfiguration;
 
+import com.attendify.attendify_api.shared.exception.ErrorResponse;
 import com.attendify.attendify_api.shared.jwt.JwtAuthenticationFilter;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -23,6 +25,7 @@ import lombok.RequiredArgsConstructor;
 public class SecurityConfig {
         private final JwtAuthenticationFilter jwtAuthenticationFilter;
         private final AuthenticationProvider authenticationProvider;
+        private final ObjectMapper objectMapper;
 
         @Bean
         public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
@@ -50,10 +53,32 @@ public class SecurityConfig {
                                 .authenticationProvider(authenticationProvider)
                                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
                                 .exceptionHandling(ex -> ex
-                                                .authenticationEntryPoint((request, response, e) -> response.sendError(
-                                                                HttpServletResponse.SC_UNAUTHORIZED, "Unauthorized"))
-                                                .accessDeniedHandler((request, response, e) -> response.sendError(
-                                                                HttpServletResponse.SC_FORBIDDEN, "Forbidden")))
+                                                .authenticationEntryPoint((request, response, e) -> {
+                                                        response.setContentType("application/json");
+                                                        response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+
+                                                        var body = ErrorResponse.of(
+                                                                        HttpServletResponse.SC_UNAUTHORIZED,
+                                                                        "Unauthorized",
+                                                                        "Invalid or expired token",
+                                                                        request.getRequestURI());
+
+                                                        response.getWriter()
+                                                                        .write(objectMapper.writeValueAsString(body));
+                                                })
+                                                .accessDeniedHandler((request, response, e) -> {
+                                                        response.setContentType("application/json");
+                                                        response.setStatus(HttpServletResponse.SC_FORBIDDEN);
+
+                                                        var body = ErrorResponse.of(
+                                                                        HttpServletResponse.SC_FORBIDDEN,
+                                                                        "Forbidden",
+                                                                        "You don’t have permission to access this resource",
+                                                                        request.getRequestURI());
+
+                                                        response.getWriter()
+                                                                        .write(objectMapper.writeValueAsString(body));
+                                                }))
                                 .build();
         }
 }
