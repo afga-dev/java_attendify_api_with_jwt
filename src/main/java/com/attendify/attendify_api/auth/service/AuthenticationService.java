@@ -9,9 +9,9 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import com.attendify.attendify_api.auth.dto.AuthenticationResponse;
-import com.attendify.attendify_api.auth.dto.LoginRequest;
-import com.attendify.attendify_api.auth.dto.RegisterRequest;
+import com.attendify.attendify_api.auth.dto.AuthenticationResponseDTO;
+import com.attendify.attendify_api.auth.dto.LoginRequestDTO;
+import com.attendify.attendify_api.auth.dto.RegisterRequestDTO;
 import com.attendify.attendify_api.auth.model.Token;
 import com.attendify.attendify_api.auth.model.TokenPurpose;
 import com.attendify.attendify_api.auth.model.TokenType;
@@ -35,7 +35,7 @@ public class AuthenticationService {
         private final AuthenticationManager authenticationManager;
         private final TokenRepository tokenRepository;
 
-        public AuthenticationResponse register(RegisterRequest request) {
+        public AuthenticationResponseDTO register(RegisterRequestDTO request) {
                 if (userRepository.existsByEmail(request.getEmail()))
                         throw new IllegalArgumentException("Email '" + request.getEmail() + "'' is already in use");
 
@@ -52,14 +52,14 @@ public class AuthenticationService {
 
                 saveUserToken(savedUser, refreshToken);
 
-                return AuthenticationResponse
+                return AuthenticationResponseDTO
                                 .builder()
                                 .accessToken(accessToken)
                                 .refreshToken(refreshToken)
                                 .build();
         }
 
-        public AuthenticationResponse login(LoginRequest request) {
+        public AuthenticationResponseDTO login(LoginRequestDTO request) {
                 authenticationManager.authenticate(
                                 new UsernamePasswordAuthenticationToken(
                                                 request.getEmail(),
@@ -74,7 +74,7 @@ public class AuthenticationService {
                 tokenRepository.revokeAllUserTokens(user.getId());
                 saveUserToken(user, refreshToken);
 
-                return AuthenticationResponse
+                return AuthenticationResponseDTO
                                 .builder()
                                 .accessToken(accessToken)
                                 .refreshToken(refreshToken)
@@ -99,7 +99,7 @@ public class AuthenticationService {
                 tokenRepository.save(token);
         }
 
-        public AuthenticationResponse refresh(String authHeader) {
+        public AuthenticationResponseDTO refresh(String authHeader) {
                 if (authHeader == null || !authHeader.startsWith(SecurityConstants.BEARER_PREFIX)) {
                         throw new BadCredentialsException("Missing or malformed authorization header");
                 }
@@ -135,7 +135,7 @@ public class AuthenticationService {
                 String newRefreshToken = jwtService.generateToken(userDetails, TokenPurpose.REFRESH);
                 saveUserToken(userEntity, newRefreshToken);
 
-                return AuthenticationResponse.builder()
+                return AuthenticationResponseDTO.builder()
                                 .accessToken(newAccessToken)
                                 .refreshToken(newRefreshToken)
                                 .build();

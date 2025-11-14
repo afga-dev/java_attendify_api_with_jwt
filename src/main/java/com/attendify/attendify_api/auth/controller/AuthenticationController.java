@@ -8,9 +8,9 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.attendify.attendify_api.auth.dto.AuthenticationResponse;
-import com.attendify.attendify_api.auth.dto.LoginRequest;
-import com.attendify.attendify_api.auth.dto.RegisterRequest;
+import com.attendify.attendify_api.auth.dto.AuthenticationResponseDTO;
+import com.attendify.attendify_api.auth.dto.LoginRequestDTO;
+import com.attendify.attendify_api.auth.dto.RegisterRequestDTO;
 import com.attendify.attendify_api.auth.service.AuthenticationService;
 import com.attendify.attendify_api.shared.jwt.SecurityConstants;
 
@@ -24,21 +24,21 @@ public class AuthenticationController {
     private final AuthenticationService authenticationService;
 
     @PostMapping("/register")
-    public ResponseEntity<AuthenticationResponse> register(@Valid @RequestBody RegisterRequest request) {
+    public ResponseEntity<AuthenticationResponseDTO> register(@Valid @RequestBody RegisterRequestDTO request) {
         return ResponseEntity
                 .status(HttpStatus.CREATED)
                 .body(authenticationService.register(request));
     }
 
     @PostMapping("/login")
-    public ResponseEntity<AuthenticationResponse> login(@Valid @RequestBody LoginRequest request) {
+    public ResponseEntity<AuthenticationResponseDTO> login(@Valid @RequestBody LoginRequestDTO request) {
         return ResponseEntity.ok(authenticationService.login(request));
     }
 
     @PostMapping("/refresh")
-    public ResponseEntity<AuthenticationResponse> refresh(
+    public ResponseEntity<AuthenticationResponseDTO> refresh(
             @RequestHeader(SecurityConstants.AUTHORIZATION_HEADER) String authHeader) {
-        AuthenticationResponse authResponse = authenticationService.refresh(authHeader);
+        AuthenticationResponseDTO authResponse = authenticationService.refresh(authHeader);
         return ResponseEntity.ok(authResponse);
     }
 }
