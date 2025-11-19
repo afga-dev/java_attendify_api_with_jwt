@@ -1,8 +1,9 @@
 package com.attendify.attendify_api.event.service.impl;
 
 import java.time.LocalDateTime;
-import java.util.List;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -15,6 +16,7 @@ import com.attendify.attendify_api.event.model.EventRegistration;
 import com.attendify.attendify_api.event.repository.EventRegistrationRepository;
 import com.attendify.attendify_api.event.repository.EventRepository;
 import com.attendify.attendify_api.event.service.EventRegistrationService;
+import com.attendify.attendify_api.shared.dto.PageResponseDTO;
 import com.attendify.attendify_api.shared.exception.BadRequestException;
 import com.attendify.attendify_api.shared.exception.NotFoundException;
 import com.attendify.attendify_api.user.model.User;
@@ -79,22 +81,20 @@ public class EventRegistrationServiceImpl implements EventRegistrationService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<EventRegistrationResponseDTO> getUsersByEvent(Long id) {
-        return eventRegistrationRepository.findByEvent_IdFetch(id)
-                .stream()
-                .map(eventRegistrationMapper::toResponse)
-                .toList();
+    public PageResponseDTO<EventRegistrationResponseDTO> getUsersByEvent(Long id, Pageable pageable) {
+        Page<EventRegistration> page = eventRegistrationRepository.findByEvent_IdFetch(id, pageable);
+
+        return eventRegistrationMapper.toPageResponse(page);
     }
 
     @Override
     @Transactional(readOnly = true)
-    public List<EventRegistrationResponseDTO> getMyEvents() {
+    public PageResponseDTO<EventRegistrationResponseDTO> getMyEvents(Pageable pageable) {
         Long userId = getAuthenticatedUserId();
 
-        return eventRegistrationRepository.findByUser_IdFetch(userId)
-                .stream()
-                .map(eventRegistrationMapper::toResponse)
-                .toList();
+        Page<EventRegistration> page = eventRegistrationRepository.findByUser_IdFetch(userId, pageable);
+
+        return eventRegistrationMapper.toPageResponse(page);
     }
 
     private Long getAuthenticatedUserId() {

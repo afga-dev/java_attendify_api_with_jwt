@@ -1,22 +1,26 @@
 package com.attendify.attendify_api.event.service.impl;
 
-import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.attendify.attendify_api.event.dto.EventFilter;
 import com.attendify.attendify_api.event.dto.EventRequestDTO;
 import com.attendify.attendify_api.event.dto.EventResponseDTO;
 import com.attendify.attendify_api.event.dto.EventSimpleDTO;
 import com.attendify.attendify_api.event.mapper.EventMapper;
 import com.attendify.attendify_api.event.model.Category;
 import com.attendify.attendify_api.event.model.Event;
+import com.attendify.attendify_api.event.persistence.EventSpecification;
 import com.attendify.attendify_api.event.repository.CategoryRepository;
 import com.attendify.attendify_api.event.repository.EventRepository;
 import com.attendify.attendify_api.event.service.EventService;
+import com.attendify.attendify_api.shared.dto.PageResponseDTO;
 import com.attendify.attendify_api.shared.exception.NotFoundException;
 import com.attendify.attendify_api.user.model.User;
 import com.attendify.attendify_api.user.repository.UserRepository;
@@ -32,6 +36,7 @@ public class EventServiceImpl implements EventService {
     private final EventRepository eventRepository;
     private final UserRepository userRepository;
     private final CategoryRepository categoryRepository;
+    private final EventSpecification eventSpecification;
 
     @Override
     @Transactional
@@ -79,19 +84,19 @@ public class EventServiceImpl implements EventService {
     }
 
     @Override
-    public List<EventSimpleDTO> findAll() {
-        return eventRepository.findAll()
-                .stream()
-                .map(eventMapper::toSimple)
-                .toList();
+    @Transactional(readOnly = true)
+    public PageResponseDTO<EventSimpleDTO> findAll(EventFilter eventFilter, Pageable pageable) {
+        Page<Event> page = eventRepository.findAll(eventSpecification.build(eventFilter), pageable);
+
+        return eventMapper.toPageResponse(page);
     }
 
     @Override
-    public List<EventSimpleDTO> findByCategory(Long categoryId) {
-        return eventRepository.findByCategories_Id(categoryId)
-                .stream()
-                .map(eventMapper::toSimple)
-                .toList();
+    @Transactional(readOnly = true)
+    public PageResponseDTO<EventSimpleDTO> findByCategory(Long categoryId, Pageable pageable) {
+        Page<Event> page = eventRepository.findByCategories_Id(categoryId, pageable);
+
+        return eventMapper.toPageResponse(page);
     }
 
     private Long getAuthenticatedUserId() {

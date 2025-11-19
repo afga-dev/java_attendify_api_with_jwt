@@ -1,8 +1,8 @@
 package com.attendify.attendify_api.event.controller;
 
 import java.net.URI;
-import java.util.List;
 
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.attendify.attendify_api.event.dto.EventRegistrationRequestDTO;
 import com.attendify.attendify_api.event.dto.EventRegistrationResponseDTO;
 import com.attendify.attendify_api.event.service.EventRegistrationService;
+import com.attendify.attendify_api.shared.dto.PageResponseDTO;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -51,13 +52,14 @@ public class EventRegistrationController {
     }
 
     @GetMapping("/event/{eventId}")
-    public ResponseEntity<List<EventRegistrationResponseDTO>> getUserByEvent(
-            @PathVariable Long eventId) {
-        return ResponseEntity.ok(eventRegistrationService.getUsersByEvent(eventId));
+    public ResponseEntity<PageResponseDTO<EventRegistrationResponseDTO>> getUserByEvent(
+            @PathVariable Long eventId,
+            Pageable pageable) {
+        return ResponseEntity.ok(eventRegistrationService.getUsersByEvent(eventId, pageable));
     }
 
     @GetMapping("/my")
-    public ResponseEntity<List<EventRegistrationResponseDTO>> getMyEvents() {
-        return ResponseEntity.ok(eventRegistrationService.getMyEvents());
+    public ResponseEntity<PageResponseDTO<EventRegistrationResponseDTO>> getMyEvents(Pageable pageable) {
+        return ResponseEntity.ok(eventRegistrationService.getMyEvents(pageable));
     }
 }

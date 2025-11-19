@@ -1,9 +1,10 @@
 package com.attendify.attendify_api.event.service;
 
-import java.util.List;
+import org.springframework.data.domain.Pageable;
 
 import com.attendify.attendify_api.event.dto.EventRegistrationRequestDTO;
 import com.attendify.attendify_api.event.dto.EventRegistrationResponseDTO;
+import com.attendify.attendify_api.shared.dto.PageResponseDTO;
 
 public interface EventRegistrationService {
     EventRegistrationResponseDTO create(EventRegistrationRequestDTO dto);
@@ -12,7 +13,7 @@ public interface EventRegistrationService {
 
     EventRegistrationResponseDTO checkIn(Long id);
 
-    List<EventRegistrationResponseDTO> getUsersByEvent(Long id);
+    PageResponseDTO<EventRegistrationResponseDTO> getUsersByEvent(Long id, Pageable pageable);
 
-    List<EventRegistrationResponseDTO> getMyEvents();
+    PageResponseDTO<EventRegistrationResponseDTO> getMyEvents(Pageable pageable);
 }

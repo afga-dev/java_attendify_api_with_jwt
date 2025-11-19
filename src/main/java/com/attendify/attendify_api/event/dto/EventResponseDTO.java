@@ -3,6 +3,7 @@ package com.attendify.attendify_api.event.dto;
 import java.time.LocalDateTime;
 import java.util.Set;
 
+import com.attendify.attendify_api.event.model.EventLocation;
 import com.attendify.attendify_api.event.model.EventStatus;
 
 import lombok.Builder;
@@ -16,7 +17,7 @@ public class EventResponseDTO {
     private String description;
     private LocalDateTime startDate;
     private LocalDateTime endDate;
-    private String location;
+    private EventLocation location;
     private Integer capacity;
     private EventStatus status;
     private Long createdById;

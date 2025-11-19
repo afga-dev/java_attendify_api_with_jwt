@@ -1,8 +1,8 @@
 package com.attendify.attendify_api.event.controller;
 
 import java.net.URI;
-import java.util.List;
 
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -13,10 +13,12 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.attendify.attendify_api.event.dto.EventFilter;
 import com.attendify.attendify_api.event.dto.EventRequestDTO;
 import com.attendify.attendify_api.event.dto.EventResponseDTO;
 import com.attendify.attendify_api.event.dto.EventSimpleDTO;
 import com.attendify.attendify_api.event.service.EventService;
+import com.attendify.attendify_api.shared.dto.PageResponseDTO;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -59,13 +61,16 @@ public class EventController {
     }
 
     @GetMapping
-    public ResponseEntity<List<EventSimpleDTO>> getAllEvents() {
-        return ResponseEntity.ok(eventService.findAll());
+    public ResponseEntity<PageResponseDTO<EventSimpleDTO>> getAllEvents(
+            EventFilter eventFilter,
+            Pageable pageable) {
+        return ResponseEntity.ok(eventService.findAll(eventFilter, pageable));
     }
 
     @GetMapping("/category/{id}")
-    public ResponseEntity<List<EventSimpleDTO>> getByCategory(
-            @PathVariable Long id) {
-        return ResponseEntity.ok(eventService.findByCategory(id));
+    public ResponseEntity<PageResponseDTO<EventSimpleDTO>> getByCategory(
+            @PathVariable Long id,
+            Pageable pageable) {
+        return ResponseEntity.ok(eventService.findByCategory(id, pageable));
     }
 }

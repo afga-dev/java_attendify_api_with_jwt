@@ -1,10 +1,11 @@
 package com.attendify.attendify_api.event.service;
 
-import java.util.List;
+import org.springframework.data.domain.Pageable;
 
 import com.attendify.attendify_api.event.dto.CategoryRequestDTO;
 import com.attendify.attendify_api.event.dto.CategoryResponseDTO;
 import com.attendify.attendify_api.event.dto.CategorySimpleDTO;
+import com.attendify.attendify_api.shared.dto.PageResponseDTO;
 
 public interface CategoryService {
     CategoryResponseDTO create(CategoryRequestDTO dto);
@@ -15,5 +16,5 @@ public interface CategoryService {
 
     CategoryResponseDTO findById(Long id);
 
-    List<CategorySimpleDTO> findAll();
+    PageResponseDTO<CategorySimpleDTO> findAll(Pageable pageable);
 }

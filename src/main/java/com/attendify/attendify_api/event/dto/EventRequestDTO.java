@@ -3,6 +3,7 @@ package com.attendify.attendify_api.event.dto;
 import java.time.LocalDateTime;
 import java.util.Set;
 
+import com.attendify.attendify_api.event.model.EventLocation;
 import com.attendify.attendify_api.event.model.EventStatus;
 import com.attendify.attendify_api.shared.validation.Sanitize;
 
@@ -27,9 +28,8 @@ public class EventRequestDTO {
     @NotNull(message = "End date is required")
     private LocalDateTime endDate;
 
-    @NotBlank(message = "Location is required")
-    @Sanitize
-    private String location;
+    @NotNull(message = "Location is required")
+    private EventLocation location;
 
     @NotNull(message = "Capacity is required")
     private Integer capacity;

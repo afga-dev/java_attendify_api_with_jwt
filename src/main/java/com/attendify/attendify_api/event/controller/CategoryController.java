@@ -1,8 +1,8 @@
 package com.attendify.attendify_api.event.controller;
 
 import java.net.URI;
-import java.util.List;
 
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -17,6 +17,7 @@ import com.attendify.attendify_api.event.dto.CategoryRequestDTO;
 import com.attendify.attendify_api.event.dto.CategoryResponseDTO;
 import com.attendify.attendify_api.event.dto.CategorySimpleDTO;
 import com.attendify.attendify_api.event.service.CategoryService;
+import com.attendify.attendify_api.shared.dto.PageResponseDTO;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -59,7 +60,7 @@ public class CategoryController {
     }
 
     @GetMapping
-    public ResponseEntity<List<CategorySimpleDTO>> getAllCategories() {
-        return ResponseEntity.ok(categoryService.findAll());
+    public ResponseEntity<PageResponseDTO<CategorySimpleDTO>> getAllCategories(Pageable pageable) {
+        return ResponseEntity.ok(categoryService.findAll(pageable));
     }
 }

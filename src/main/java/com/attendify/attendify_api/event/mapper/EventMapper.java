@@ -3,12 +3,14 @@ package com.attendify.attendify_api.event.mapper;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Component;
 
 import com.attendify.attendify_api.event.dto.EventRequestDTO;
 import com.attendify.attendify_api.event.dto.EventResponseDTO;
 import com.attendify.attendify_api.event.dto.EventSimpleDTO;
 import com.attendify.attendify_api.event.model.Event;
+import com.attendify.attendify_api.shared.dto.PageResponseDTO;
 import com.attendify.attendify_api.user.model.User;
 import com.attendify.attendify_api.event.model.Category;
 
@@ -76,6 +78,19 @@ public class EventMapper {
                                 .startDate(event.getStartDate())
                                 .endDate(event.getEndDate())
                                 .status(event.getStatus())
+                                .build();
+        }
+
+        public PageResponseDTO<EventSimpleDTO> toPageResponse(Page<Event> page) {
+                return PageResponseDTO.<EventSimpleDTO>builder()
+                                .items(page.getContent().stream()
+                                                .map(this::toSimple)
+                                                .toList())
+                                .page(page.getNumber())
+                                .size(page.getSize())
+                                .totalItems(page.getTotalElements())
+                                .totalPages(page.getTotalPages())
+                                .isLast(page.isLast())
                                 .build();
         }
 }

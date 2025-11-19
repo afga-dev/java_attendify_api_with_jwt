@@ -1,7 +1,7 @@
 package com.attendify.attendify_api.event.service.impl;
 
-import java.util.List;
-
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -12,6 +12,7 @@ import com.attendify.attendify_api.event.mapper.CategoryMapper;
 import com.attendify.attendify_api.event.model.Category;
 import com.attendify.attendify_api.event.repository.CategoryRepository;
 import com.attendify.attendify_api.event.service.CategoryService;
+import com.attendify.attendify_api.shared.dto.PageResponseDTO;
 import com.attendify.attendify_api.shared.exception.DuplicateException;
 import com.attendify.attendify_api.shared.exception.NotFoundException;
 
@@ -65,10 +66,10 @@ public class CategoryServiceImpl implements CategoryService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<CategorySimpleDTO> findAll() {
-        return categoryRepository.findAll().stream()
-                .map(categoryMapper::toSimple)
-                .toList();
+    public PageResponseDTO<CategorySimpleDTO> findAll(Pageable pageable) {
+        Page<Category> page = categoryRepository.findAll(pageable);
+    
+        return categoryMapper.toPageResponse(page);
     }
 
     private Category getCategoryOrElseThrow(Long id) {

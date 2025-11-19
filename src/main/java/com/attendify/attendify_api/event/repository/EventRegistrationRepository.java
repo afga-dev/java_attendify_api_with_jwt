@@ -1,12 +1,13 @@
 package com.attendify.attendify_api.event.repository;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import com.attendify.attendify_api.event.model.EventRegistration;
-import java.util.List;
 
 @Repository
 public interface EventRegistrationRepository extends JpaRepository<EventRegistration, Long> {
@@ -20,7 +21,7 @@ public interface EventRegistrationRepository extends JpaRepository<EventRegistra
                 JOIN FETCH er.event
                 WHERE er.event.id = :eventId
             """)
-    List<EventRegistration> findByEvent_IdFetch(@Param("eventId") Long id);
+    Page<EventRegistration> findByEvent_IdFetch(@Param("eventId") Long id, Pageable pageable);
 
     @Query("""
                 SELECT er FROM EventRegistration er
@@ -28,5 +29,5 @@ public interface EventRegistrationRepository extends JpaRepository<EventRegistra
                 JOIN FETCH er.event
                 WHERE er.user.id = :userId
             """)
-    List<EventRegistration> findByUser_IdFetch(@Param("userId") Long userId);
+    Page<EventRegistration> findByUser_IdFetch(@Param("userId") Long userId, Pageable pageable);
 }
