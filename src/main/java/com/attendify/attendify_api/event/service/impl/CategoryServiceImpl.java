@@ -1,6 +1,7 @@
 package com.attendify.attendify_api.event.service.impl;
 
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.AuditorAware;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -23,6 +24,7 @@ import lombok.RequiredArgsConstructor;
 public class CategoryServiceImpl implements CategoryService {
     private final CategoryMapper categoryMapper;
     private final CategoryRepository categoryRepository;
+    private final AuditorAware<Long> auditorAware;
 
     @Override
     @Transactional
@@ -53,7 +55,10 @@ public class CategoryServiceImpl implements CategoryService {
     public void delete(Long id) {
         Category category = getCategoryOrElseThrow(id);
 
-        categoryRepository.delete(category);
+        Long userId = auditorAware.getCurrentAuditor().orElse(null);
+        category.softDelete(userId);
+
+        categoryRepository.save(category);
     }
 
     @Override
@@ -68,7 +73,7 @@ public class CategoryServiceImpl implements CategoryService {
     @Transactional(readOnly = true)
     public PageResponseDTO<CategorySimpleDTO> findAll(Pageable pageable) {
         Page<Category> page = categoryRepository.findAll(pageable);
-    
+
         return categoryMapper.toPageResponse(page);
     }
 

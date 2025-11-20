@@ -3,9 +3,11 @@ package com.attendify.attendify_api.user.model;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.hibernate.annotations.SQLRestriction;
+
 import com.attendify.attendify_api.auth.model.Token;
 import com.attendify.attendify_api.event.model.EventRegistration;
-import com.attendify.attendify_api.shared.core.AuditableEntity;
+import com.attendify.attendify_api.shared.audit.SoftDeletableEntity;
 
 import jakarta.persistence.CollectionTable;
 import jakarta.persistence.Column;
@@ -36,7 +38,8 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Entity
 @Table(name = "users")
-public class User extends AuditableEntity {
+@SQLRestriction("deleted_at IS NULL")
+public class User extends SoftDeletableEntity {
     @EqualsAndHashCode.Include
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

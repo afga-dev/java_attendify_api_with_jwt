@@ -20,7 +20,6 @@ public class EventResponseDTO {
     private EventLocation location;
     private Integer capacity;
     private EventStatus status;
-    private Long createdById;
     private Set<Long> registeredUserIds;
     private Set<Long> categoryIds;
 }

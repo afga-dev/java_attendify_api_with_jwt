@@ -4,8 +4,9 @@ import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Set;
 
-import com.attendify.attendify_api.shared.core.AuditableEntity;
-import com.attendify.attendify_api.user.model.User;
+import org.hibernate.annotations.SQLRestriction;
+
+import com.attendify.attendify_api.shared.audit.SoftDeletableEntity;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import jakarta.persistence.Column;
@@ -20,7 +21,6 @@ import jakarta.persistence.Index;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
-import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotBlank;
@@ -41,7 +41,8 @@ import lombok.NoArgsConstructor;
         @Index(name = "idx_event_start_date", columnList = "start_date"),
         @Index(name = "idx_event_location", columnList = "location"),
 })
-public class Event extends AuditableEntity {
+@SQLRestriction("deleted_at IS NULL")
+public class Event extends SoftDeletableEntity {
     @EqualsAndHashCode.Include
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -77,10 +78,6 @@ public class Event extends AuditableEntity {
     @Column(nullable = false)
     @NotNull
     private EventStatus status;
-
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "created_by", nullable = false)
-    private User createdBy;
 
     @JsonIgnore
     @Builder.Default

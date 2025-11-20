@@ -11,14 +11,12 @@ import com.attendify.attendify_api.event.dto.EventResponseDTO;
 import com.attendify.attendify_api.event.dto.EventSimpleDTO;
 import com.attendify.attendify_api.event.model.Event;
 import com.attendify.attendify_api.shared.dto.PageResponseDTO;
-import com.attendify.attendify_api.user.model.User;
 import com.attendify.attendify_api.event.model.Category;
 
 @Component
 public class EventMapper {
         public Event toEntity(
                         EventRequestDTO dto,
-                        User user,
                         Set<Category> categories) {
                 return Event.builder()
                                 .title(dto.getTitle())
@@ -28,7 +26,6 @@ public class EventMapper {
                                 .location(dto.getLocation())
                                 .capacity(dto.getCapacity())
                                 .status(dto.getStatus())
-                                .createdBy(user)
                                 .categories(categories)
                                 .build();
         }
@@ -59,7 +56,6 @@ public class EventMapper {
                                 .location(event.getLocation())
                                 .capacity(event.getCapacity())
                                 .status(event.getStatus())
-                                .createdById(event.getCreatedBy().getId())
                                 .registeredUserIds(event.getRegistrations()
                                                 .stream()
                                                 .map(registration -> registration.getUser().getId())

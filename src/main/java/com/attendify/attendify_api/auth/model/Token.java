@@ -1,6 +1,6 @@
 package com.attendify.attendify_api.auth.model;
 
-import com.attendify.attendify_api.shared.core.AuditableEntity;
+import com.attendify.attendify_api.shared.audit.SoftDeletableEntity;
 import com.attendify.attendify_api.user.model.User;
 
 import jakarta.persistence.Column;
@@ -31,7 +31,7 @@ import lombok.NoArgsConstructor;
 @Table(name = "tokens", indexes = {
         @Index(name = "index_token_value", columnList = "token")
 })
-public class Token extends AuditableEntity {
+public class Token extends SoftDeletableEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "token_id")

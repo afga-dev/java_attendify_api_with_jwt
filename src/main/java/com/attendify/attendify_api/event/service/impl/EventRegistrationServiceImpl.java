@@ -2,6 +2,7 @@ package com.attendify.attendify_api.event.service.impl;
 
 import java.time.LocalDateTime;
 
+import org.springframework.data.domain.AuditorAware;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -32,6 +33,7 @@ public class EventRegistrationServiceImpl implements EventRegistrationService {
     private final EventRegistrationRepository eventRegistrationRepository;
     private final UserRepository userRepository;
     private final EventRepository eventRepository;
+    private final AuditorAware<Long> auditorAware;
 
     @Override
     @Transactional
@@ -66,7 +68,10 @@ public class EventRegistrationServiceImpl implements EventRegistrationService {
     public void delete(Long id) {
         EventRegistration eventRegistration = getEventRegistrationOrElseThrow(id);
 
-        eventRegistrationRepository.delete(eventRegistration);
+        Long userId = auditorAware.getCurrentAuditor().orElse(null);
+        eventRegistration.softDelete(userId);
+
+        eventRegistrationRepository.save(eventRegistration);
     }
 
     @Override

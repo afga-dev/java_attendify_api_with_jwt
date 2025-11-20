@@ -1,6 +1,8 @@
 package com.attendify.attendify_api.event.model;
 
-import com.attendify.attendify_api.shared.core.AuditableEntity;
+import org.hibernate.annotations.SQLRestriction;
+
+import com.attendify.attendify_api.shared.audit.SoftDeletableEntity;
 import com.attendify.attendify_api.user.model.User;
 
 import jakarta.persistence.Column;
@@ -33,7 +35,8 @@ import lombok.NoArgsConstructor;
 }, uniqueConstraints = {
                 @UniqueConstraint(columnNames = { "user_id", "event_id" })
 })
-public class EventRegistration extends AuditableEntity {
+@SQLRestriction("deleted_at IS NULL")
+public class EventRegistration extends SoftDeletableEntity {
         @EqualsAndHashCode.Include
         @Id
         @GeneratedValue(strategy = GenerationType.IDENTITY)

@@ -3,9 +3,9 @@ package com.attendify.attendify_api.event.service.impl;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import org.springframework.data.domain.AuditorAware;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -22,9 +22,6 @@ import com.attendify.attendify_api.event.repository.EventRepository;
 import com.attendify.attendify_api.event.service.EventService;
 import com.attendify.attendify_api.shared.dto.PageResponseDTO;
 import com.attendify.attendify_api.shared.exception.NotFoundException;
-import com.attendify.attendify_api.user.model.User;
-import com.attendify.attendify_api.user.repository.UserRepository;
-import com.attendify.attendify_api.user.security.CustomUserDetails;
 
 import jakarta.validation.ValidationException;
 import lombok.RequiredArgsConstructor;
@@ -34,22 +31,20 @@ import lombok.RequiredArgsConstructor;
 public class EventServiceImpl implements EventService {
     private final EventMapper eventMapper;
     private final EventRepository eventRepository;
-    private final UserRepository userRepository;
     private final CategoryRepository categoryRepository;
     private final EventSpecification eventSpecification;
+    private final AuditorAware<Long> auditorAware;
 
     @Override
     @Transactional
     public EventResponseDTO create(EventRequestDTO dto) {
-        Long userId = getAuthenticatedUserId();
-        User createdBy = getUserOrElseThrow(userId);
         Set<Category> categories = getCategoriesFromIds(dto.getCategoryIds());
 
         if (dto.getEndDate().isBefore(dto.getStartDate())) {
             throw new ValidationException("End date must be after start date");
         }
 
-        Event entity = eventMapper.toEntity(dto, createdBy, categories);
+        Event entity = eventMapper.toEntity(dto, categories);
 
         Event event = eventRepository.save(entity);
 
@@ -72,7 +67,10 @@ public class EventServiceImpl implements EventService {
     public void delete(Long id) {
         Event event = getEventOrElseThrow(id);
 
-        eventRepository.delete(event);
+        Long userId = auditorAware.getCurrentAuditor().orElse(null);
+        event.softDelete(userId);
+
+        eventRepository.save(event);
     }
 
     @Override
@@ -97,17 +95,6 @@ public class EventServiceImpl implements EventService {
         Page<Event> page = eventRepository.findByCategories_Id(categoryId, pageable);
 
         return eventMapper.toPageResponse(page);
-    }
-
-    private Long getAuthenticatedUserId() {
-        var authentication = SecurityContextHolder.getContext().getAuthentication();
-        var principal = (CustomUserDetails) authentication.getPrincipal();
-        return principal.getId();
-    }
-
-    private User getUserOrElseThrow(Long id) {
-        return userRepository.findById(id)
-                .orElseThrow(() -> new NotFoundException("User with id '" + id + "' not found"));
     }
 
     private Event getEventOrElseThrow(Long id) {

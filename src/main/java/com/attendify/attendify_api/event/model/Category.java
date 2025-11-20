@@ -3,7 +3,9 @@ package com.attendify.attendify_api.event.model;
 import java.util.HashSet;
 import java.util.Set;
 
-import com.attendify.attendify_api.shared.core.AuditableEntity;
+import org.hibernate.annotations.SQLRestriction;
+
+import com.attendify.attendify_api.shared.audit.SoftDeletableEntity;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import jakarta.persistence.Column;
@@ -31,7 +33,8 @@ import lombok.NoArgsConstructor;
 @Table(name = "categories", indexes = {
         @Index(name = "idx_category_name", columnList = "name")
 })
-public class Category extends AuditableEntity {
+@SQLRestriction("deleted_at IS NULL")
+public class Category extends SoftDeletableEntity {
     @EqualsAndHashCode.Include
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
