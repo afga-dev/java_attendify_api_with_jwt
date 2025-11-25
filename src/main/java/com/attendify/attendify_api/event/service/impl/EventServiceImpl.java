@@ -38,9 +38,9 @@ public class EventServiceImpl implements EventService {
     @Override
     @Transactional
     public EventResponseDTO create(EventRequestDTO dto) {
-        Set<Category> categories = getCategoriesFromIds(dto.getCategoryIds());
+        Set<Category> categories = getCategoriesFromIds(dto.categoryIds());
 
-        if (dto.getEndDate().isBefore(dto.getStartDate())) {
+        if (dto.endDate().isBefore(dto.startDate())) {
             throw new ValidationException("End date must be after start date");
         }
 
@@ -57,7 +57,7 @@ public class EventServiceImpl implements EventService {
             Long id,
             EventRequestDTO dto) {
         Event event = getEventOrElseThrow(id);
-        Set<Category> categories = getCategoriesFromIds(dto.getCategoryIds());
+        Set<Category> categories = getCategoriesFromIds(dto.categoryIds());
 
         eventMapper.updateEntity(event, dto, categories);
 

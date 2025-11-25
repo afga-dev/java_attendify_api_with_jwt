@@ -34,7 +34,7 @@ public class EventController {
             @Valid @RequestBody EventRequestDTO dto) {
         EventResponseDTO created = eventService.create(dto);
 
-        return ResponseEntity.created(URI.create("/attendify/v1/events/" + created.getId())).body(created);
+        return ResponseEntity.created(URI.create("/attendify/v1/events/" + created.id())).body(created);
     }
 
     @PutMapping("/{id}")

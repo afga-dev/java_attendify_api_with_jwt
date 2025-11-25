@@ -10,33 +10,21 @@ import com.attendify.attendify_api.shared.validation.Sanitize;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
-import lombok.Data;
 
-@Data
-public class EventRequestDTO {
-    @NotBlank(message = "Title is required")
-    @Sanitize
-    private String title;
+public record EventRequestDTO(
+        @NotBlank(message = "Title is required") @Sanitize String title,
 
-    @NotBlank(message = "Description is required")
-    @Sanitize
-    private String description;
+        @NotBlank(message = "Description is required") @Sanitize String description,
 
-    @NotNull(message = "Start date is required")
-    private LocalDateTime startDate;
+        @NotNull(message = "Start date is required") LocalDateTime startDate,
 
-    @NotNull(message = "End date is required")
-    private LocalDateTime endDate;
+        @NotNull(message = "End date is required") LocalDateTime endDate,
 
-    @NotNull(message = "Location is required")
-    private EventLocation location;
+        @NotNull(message = "Location is required") EventLocation location,
 
-    @NotNull(message = "Capacity is required")
-    private Integer capacity;
+        @NotNull(message = "Capacity is required") Integer capacity,
 
-    @NotNull(message = "Status is required")
-    private EventStatus status;
+        @NotNull(message = "Status is required") EventStatus status,
 
-    @NotEmpty(message = "Event must have at least one category")
-    private Set<Long> categoryIds;
+        @NotEmpty(message = "Event must have at least one category") Set<Long> categoryIds) {
 }

@@ -40,7 +40,7 @@ public class EventRegistrationServiceImpl implements EventRegistrationService {
     public EventRegistrationResponseDTO create(EventRegistrationRequestDTO dto) {
         Long userId = getAuthenticatedUserId();
         User user = getUserOrElseThrow(userId);
-        Event event = getEventOrElseThrow(dto.getEventId());
+        Event event = getEventOrElseThrow(dto.eventId());
 
         Boolean alreadyRegistred = eventRegistrationRepository.existsByUser_IdAndEvent_Id(user.getId(), event.getId());
         if (alreadyRegistred) {

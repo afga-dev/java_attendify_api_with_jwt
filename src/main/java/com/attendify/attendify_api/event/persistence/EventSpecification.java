@@ -19,23 +19,25 @@ public class EventSpecification {
     public Specification<Event> build(EventFilter eventFilter) {
         return (root, query, cb) -> {
             List<Predicate> predicates = new ArrayList<>();
+            var text = eventFilter.text();
+            var location = eventFilter.location();
 
-            if (eventFilter.getText() != null && !eventFilter.getText().isBlank()) {
-                String like = "%" + eventFilter.getText().toLowerCase() + "%";
+            if (text != null && !text.isBlank()) {
+                String like = "%" + text.toLowerCase() + "%";
                 predicates.add(
                         cb.or(
                                 cb.like(cb.lower(root.get("title")), like),
                                 cb.like(cb.lower(root.get("description")), like)));
             }
 
-            if (Boolean.TRUE.equals(eventFilter.getOnlyUpcoming())) {
+            if (Boolean.TRUE.equals(eventFilter.onlyUpcoming())) {
                 predicates.add(
                         cb.greaterThanOrEqualTo(root.get("startDate"), LocalDateTime.now()));
             }
 
-            if (eventFilter.getLocation() != null) {
+            if (location != null) {
                 predicates.add(
-                        cb.equal(root.get("location"), eventFilter.getLocation()));
+                        cb.equal(root.get("location"), location));
             }
 
             return cb.and(predicates.toArray(new Predicate[0]));

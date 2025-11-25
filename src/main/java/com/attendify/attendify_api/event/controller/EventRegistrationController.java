@@ -32,7 +32,7 @@ public class EventRegistrationController {
             @Valid @RequestBody EventRegistrationRequestDTO dto) {
         EventRegistrationResponseDTO created = eventRegistrationService.create(dto);
 
-        return ResponseEntity.created(URI.create("/attendify/v1/registrations/" + created.getId())).body(created);
+        return ResponseEntity.created(URI.create("/attendify/v1/registrations/" + created.id())).body(created);
     }
 
     @DeleteMapping("/{id}")

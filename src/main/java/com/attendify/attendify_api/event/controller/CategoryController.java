@@ -33,7 +33,7 @@ public class CategoryController {
             @Valid @RequestBody CategoryRequestDTO dto) {
         CategoryResponseDTO created = categoryService.create(dto);
 
-        return ResponseEntity.created(URI.create("/attendify/v1/categories/" + created.getId())).body(created);
+        return ResponseEntity.created(URI.create("/attendify/v1/categories/" + created.id())).body(created);
     }
 
     @PutMapping("/{id}")

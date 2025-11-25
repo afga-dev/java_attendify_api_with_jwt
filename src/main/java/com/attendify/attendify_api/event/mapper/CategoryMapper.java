@@ -13,14 +13,14 @@ import com.attendify.attendify_api.shared.dto.PageResponseDTO;
 public class CategoryMapper {
     public Category toEntity(CategoryRequestDTO dto) {
         return Category.builder()
-                .name(dto.getName())
-                .description(dto.getDescription())
+                .name(dto.name())
+                .description(dto.description())
                 .build();
     }
 
     public void updateEntity(Category category, CategoryRequestDTO dto) {
-        category.setName(dto.getName());
-        category.setDescription(dto.getDescription());
+        category.setName(dto.name());
+        category.setDescription(dto.description());
     }
 
     public CategoryResponseDTO toResponse(Category category) {

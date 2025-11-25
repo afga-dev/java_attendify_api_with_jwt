@@ -19,13 +19,13 @@ public class EventMapper {
                         EventRequestDTO dto,
                         Set<Category> categories) {
                 return Event.builder()
-                                .title(dto.getTitle())
-                                .description(dto.getDescription())
-                                .startDate(dto.getStartDate())
-                                .endDate(dto.getEndDate())
-                                .location(dto.getLocation())
-                                .capacity(dto.getCapacity())
-                                .status(dto.getStatus())
+                                .title(dto.title())
+                                .description(dto.description())
+                                .startDate(dto.startDate())
+                                .endDate(dto.endDate())
+                                .location(dto.location())
+                                .capacity(dto.capacity())
+                                .status(dto.status())
                                 .categories(categories)
                                 .build();
         }
@@ -34,13 +34,13 @@ public class EventMapper {
                         Event event,
                         EventRequestDTO dto,
                         Set<Category> categories) {
-                event.setTitle(dto.getTitle());
-                event.setDescription(dto.getDescription());
-                event.setStartDate(dto.getStartDate());
-                event.setEndDate(dto.getEndDate());
-                event.setLocation(dto.getLocation());
-                event.setCapacity(dto.getCapacity());
-                event.setStatus(dto.getStatus());
+                event.setTitle(dto.title());
+                event.setDescription(dto.description());
+                event.setStartDate(dto.startDate());
+                event.setEndDate(dto.endDate());
+                event.setLocation(dto.location());
+                event.setCapacity(dto.capacity());
+                event.setStatus(dto.status());
 
                 event.getCategories().clear();
                 event.getCategories().addAll(categories);
