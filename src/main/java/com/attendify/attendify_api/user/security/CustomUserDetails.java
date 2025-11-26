@@ -2,6 +2,7 @@ package com.attendify.attendify_api.user.security;
 
 import java.util.Collection;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -17,14 +18,22 @@ import lombok.RequiredArgsConstructor;
 public class CustomUserDetails implements UserDetails {
     private final User user;
 
-    public Long getId(){
+    public Long getId() {
         return user.getId();
     }
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return user.getRoles().stream()
-                .map(role -> new SimpleGrantedAuthority("ROLE_" + role.name()))
+                .flatMap(role -> {
+                    var roleAuthority = new SimpleGrantedAuthority("ROLE_" + role.name());
+
+                    var permissionAuthorities = role.getPermissions()
+                            .stream()
+                            .map(permission -> new SimpleGrantedAuthority(permission.name()));
+
+                    return Stream.concat(Stream.of(roleAuthority), permissionAuthorities);
+                })
                 .collect(Collectors.toSet());
     }
 

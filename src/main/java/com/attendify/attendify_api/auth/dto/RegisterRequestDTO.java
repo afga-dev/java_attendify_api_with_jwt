@@ -7,6 +7,7 @@ import com.attendify.attendify_api.user.model.Role;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 
 public record RegisterRequestDTO(
@@ -14,5 +15,5 @@ public record RegisterRequestDTO(
 
         @NotBlank(message = "Password is required") @Size(min = 8, message = "Password must be at least 8 characters long") @Sanitize String password,
 
-        Set<Role> roles) {
+        @NotNull Set<Role> roles) {
 }

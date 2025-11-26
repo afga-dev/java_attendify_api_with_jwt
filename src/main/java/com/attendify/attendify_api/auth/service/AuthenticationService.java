@@ -65,7 +65,7 @@ public class AuthenticationService {
                         request.email(),
                         request.password()));
 
-        User user = userRepository.findByEmail(request.password())
+        User user = userRepository.findByEmail(request.email())
                 .orElseThrow(() -> new BadCredentialsException(
                         "User not found with email: " + request.email()));
         var accessToken = jwtService.generateToken(getUser(user), TokenPurpose.ACCESS);

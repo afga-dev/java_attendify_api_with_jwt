@@ -16,6 +16,13 @@ import org.springframework.web.bind.annotation.RestController;
 import com.attendify.attendify_api.event.dto.EventRegistrationRequestDTO;
 import com.attendify.attendify_api.event.dto.EventRegistrationResponseDTO;
 import com.attendify.attendify_api.event.service.EventRegistrationService;
+import com.attendify.attendify_api.shared.annotation.eventregistration.CanCreateEventRegistration;
+import com.attendify.attendify_api.shared.annotation.eventregistration.CanDeleteEventRegistration;
+import com.attendify.attendify_api.shared.annotation.eventregistration.CanReadAdminEventRegistration;
+import com.attendify.attendify_api.shared.annotation.eventregistration.CanReadDeletedEventRegistration;
+import com.attendify.attendify_api.shared.annotation.eventregistration.CanReadEventRegistration;
+import com.attendify.attendify_api.shared.annotation.eventregistration.CanRestoreEventRegistration;
+import com.attendify.attendify_api.shared.annotation.eventregistration.CanUpdateEventRegistration;
 import com.attendify.attendify_api.shared.dto.PageResponseDTO;
 
 import jakarta.validation.Valid;
@@ -28,6 +35,7 @@ public class EventRegistrationController {
     private final EventRegistrationService eventRegistrationService;
 
     @PostMapping
+    @CanCreateEventRegistration
     public ResponseEntity<EventRegistrationResponseDTO> createRegistration(
             @Valid @RequestBody EventRegistrationRequestDTO dto) {
         EventRegistrationResponseDTO created = eventRegistrationService.create(dto);
@@ -36,6 +44,7 @@ public class EventRegistrationController {
     }
 
     @DeleteMapping("/{id}")
+    @CanDeleteEventRegistration
     public ResponseEntity<Void> deleteRegistration(
             @PathVariable Long id) {
         eventRegistrationService.delete(id);
@@ -44,6 +53,7 @@ public class EventRegistrationController {
     }
 
     @PutMapping("/{id}/restore")
+    @CanRestoreEventRegistration
     public ResponseEntity<Void> restoreRegistration(
             @PathVariable Long id) {
         eventRegistrationService.restore(id);
@@ -52,6 +62,7 @@ public class EventRegistrationController {
     }
 
     @PutMapping("/{id}/check-in")
+    @CanUpdateEventRegistration
     public ResponseEntity<EventRegistrationResponseDTO> checkIn(
             @PathVariable Long id) {
         EventRegistrationResponseDTO checkIn = eventRegistrationService.checkIn(id);
@@ -60,24 +71,28 @@ public class EventRegistrationController {
     }
 
     @GetMapping("/event/{eventId}")
-    public ResponseEntity<PageResponseDTO<EventRegistrationResponseDTO>> getUserByEvent(
+    @CanReadAdminEventRegistration
+    public ResponseEntity<PageResponseDTO<EventRegistrationResponseDTO>> getUsersByEvent(
             @PathVariable Long eventId,
             Pageable pageable) {
         return ResponseEntity.ok(eventRegistrationService.getUsersByEvent(eventId, pageable));
     }
 
     @GetMapping("/my")
+    @CanReadEventRegistration
     public ResponseEntity<PageResponseDTO<EventRegistrationResponseDTO>> getMyEvents(Pageable pageable) {
         return ResponseEntity.ok(eventRegistrationService.getMyEvents(pageable));
     }
 
     @GetMapping("/deleted")
+    @CanReadDeletedEventRegistration
     public ResponseEntity<PageResponseDTO<EventRegistrationResponseDTO>> getAllEventRegistrationsDeleted(
             Pageable pageable) {
         return ResponseEntity.ok(eventRegistrationService.findAllDeleted(pageable));
     }
 
     @GetMapping("/including-deleted")
+    @CanReadDeletedEventRegistration
     public ResponseEntity<PageResponseDTO<EventRegistrationResponseDTO>> getAllEventRegistrationsIncludingDeleted(
             Pageable pageable) {
         return ResponseEntity.ok(eventRegistrationService.findAllIncludingDeleted(pageable));

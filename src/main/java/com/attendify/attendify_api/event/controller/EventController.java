@@ -18,6 +18,12 @@ import com.attendify.attendify_api.event.dto.EventRequestDTO;
 import com.attendify.attendify_api.event.dto.EventResponseDTO;
 import com.attendify.attendify_api.event.dto.EventSimpleDTO;
 import com.attendify.attendify_api.event.service.EventService;
+import com.attendify.attendify_api.shared.annotation.event.CanCreateEvent;
+import com.attendify.attendify_api.shared.annotation.event.CanDeleteEvent;
+import com.attendify.attendify_api.shared.annotation.event.CanReadDeletedEvent;
+import com.attendify.attendify_api.shared.annotation.event.CanReadEvent;
+import com.attendify.attendify_api.shared.annotation.event.CanRestoreEvent;
+import com.attendify.attendify_api.shared.annotation.event.CanUpdateEvent;
 import com.attendify.attendify_api.shared.dto.PageResponseDTO;
 
 import jakarta.validation.Valid;
@@ -30,6 +36,7 @@ public class EventController {
     private final EventService eventService;
 
     @PostMapping
+    @CanCreateEvent
     public ResponseEntity<EventResponseDTO> createEvent(
             @Valid @RequestBody EventRequestDTO dto) {
         EventResponseDTO created = eventService.create(dto);
@@ -38,6 +45,7 @@ public class EventController {
     }
 
     @PutMapping("/{id}")
+    @CanUpdateEvent
     public ResponseEntity<EventResponseDTO> updateEvent(
             @PathVariable Long id,
             @Valid @RequestBody EventRequestDTO dto) {
@@ -47,6 +55,7 @@ public class EventController {
     }
 
     @DeleteMapping("/{id}")
+    @CanDeleteEvent
     public ResponseEntity<Void> deleteEvent(
             @PathVariable Long id) {
         eventService.delete(id);
@@ -55,6 +64,7 @@ public class EventController {
     }
 
     @PutMapping("/{id}/restore")
+    @CanRestoreEvent
     public ResponseEntity<Void> restoreEvent(
             @PathVariable Long id) {
         eventService.restore(id);
@@ -63,12 +73,14 @@ public class EventController {
     }
 
     @GetMapping("/{id}")
+    @CanReadEvent
     public ResponseEntity<EventResponseDTO> getEvent(
             @PathVariable Long id) {
         return ResponseEntity.ok(eventService.findById(id));
     }
 
     @GetMapping
+    @CanReadEvent
     public ResponseEntity<PageResponseDTO<EventSimpleDTO>> getAllEvents(
             EventFilter eventFilter,
             Pageable pageable) {
@@ -76,6 +88,7 @@ public class EventController {
     }
 
     @GetMapping("/category/{id}")
+    @CanReadEvent
     public ResponseEntity<PageResponseDTO<EventSimpleDTO>> getByCategory(
             @PathVariable Long id,
             Pageable pageable) {
@@ -83,12 +96,14 @@ public class EventController {
     }
 
     @GetMapping("/deleted")
+    @CanReadDeletedEvent
     public ResponseEntity<PageResponseDTO<EventSimpleDTO>> getAllEventsDeleted(
             Pageable pageable) {
         return ResponseEntity.ok(eventService.findAllDeleted(pageable));
     }
 
     @GetMapping("/including-deleted")
+    @CanReadDeletedEvent
     public ResponseEntity<PageResponseDTO<EventSimpleDTO>> getByCategoryIncludingDeleted(
             Pageable pageable) {
         return ResponseEntity.ok(eventService.findAllIncludingDeleted(pageable));

@@ -17,6 +17,12 @@ import com.attendify.attendify_api.event.dto.CategoryRequestDTO;
 import com.attendify.attendify_api.event.dto.CategoryResponseDTO;
 import com.attendify.attendify_api.event.dto.CategorySimpleDTO;
 import com.attendify.attendify_api.event.service.CategoryService;
+import com.attendify.attendify_api.shared.annotation.category.CanCreateCategory;
+import com.attendify.attendify_api.shared.annotation.category.CanDeleteCategory;
+import com.attendify.attendify_api.shared.annotation.category.CanReadCategory;
+import com.attendify.attendify_api.shared.annotation.category.CanReadDeletedCategory;
+import com.attendify.attendify_api.shared.annotation.category.CanRestoreCategory;
+import com.attendify.attendify_api.shared.annotation.category.CanUpdateCategory;
 import com.attendify.attendify_api.shared.dto.PageResponseDTO;
 
 import jakarta.validation.Valid;
@@ -29,6 +35,7 @@ public class CategoryController {
     private final CategoryService categoryService;
 
     @PostMapping
+    @CanCreateCategory
     public ResponseEntity<CategoryResponseDTO> createCategory(
             @Valid @RequestBody CategoryRequestDTO dto) {
         CategoryResponseDTO created = categoryService.create(dto);
@@ -37,6 +44,7 @@ public class CategoryController {
     }
 
     @PutMapping("/{id}")
+    @CanUpdateCategory
     public ResponseEntity<CategoryResponseDTO> updateCategory(
             @PathVariable Long id,
             @Valid @RequestBody CategoryRequestDTO dto) {
@@ -46,6 +54,7 @@ public class CategoryController {
     }
 
     @DeleteMapping("/{id}")
+    @CanDeleteCategory
     public ResponseEntity<Void> deleteCategory(
             @PathVariable Long id) {
         categoryService.delete(id);
@@ -54,6 +63,7 @@ public class CategoryController {
     }
 
     @PutMapping("/{id}/restore")
+    @CanRestoreCategory
     public ResponseEntity<Void> restoreCategory(
             @PathVariable Long id) {
         categoryService.restore(id);
@@ -62,24 +72,28 @@ public class CategoryController {
     }
 
     @GetMapping("/{id}")
+    @CanReadCategory
     public ResponseEntity<CategoryResponseDTO> getCategory(
             @PathVariable Long id) {
         return ResponseEntity.ok(categoryService.findById(id));
     }
 
     @GetMapping
+    @CanReadCategory
     public ResponseEntity<PageResponseDTO<CategorySimpleDTO>> getAllCategories(
             Pageable pageable) {
         return ResponseEntity.ok(categoryService.findAll(pageable));
     }
 
     @GetMapping("/deleted")
+    @CanReadDeletedCategory
     public ResponseEntity<PageResponseDTO<CategorySimpleDTO>> getAllCategoriesDeleted(
             Pageable pageable) {
         return ResponseEntity.ok(categoryService.findAllDeleted(pageable));
     }
 
     @GetMapping("/including-deleted")
+    @CanReadDeletedCategory
     public ResponseEntity<PageResponseDTO<CategorySimpleDTO>> getAllCategoriesIncludingDeleted(
             Pageable pageable) {
         return ResponseEntity.ok(categoryService.findAllIncludingDeleted(pageable));
