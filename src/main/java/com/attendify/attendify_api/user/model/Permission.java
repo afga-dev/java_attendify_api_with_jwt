@@ -1,12 +1,8 @@
 package com.attendify.attendify_api.user.model;
 
 public enum Permission {
-    USER_READ,
-    USER_READ_DELETED,
-    USER_CREATE,
-    USER_UPDATE,
-    USER_DELETE,
-    USER_RESTORE,
+    USER_PASSWORD,
+    USER_EMAIL,
 
     CATEGORY_READ,
     CATEGORY_READ_DELETED,

@@ -9,5 +9,4 @@ public class AttendifyApiApplication {
 	public static void main(String[] args) {
 		SpringApplication.run(AttendifyApiApplication.class, args);
 	}
-
 }

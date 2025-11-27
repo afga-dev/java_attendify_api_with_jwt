@@ -9,6 +9,6 @@ import org.springframework.security.access.prepost.PreAuthorize;
 
 @Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)
-@PreAuthorize("hasAuthority('USER_CREATE')")
-public @interface CanCreateUser {
+@PreAuthorize("hasAuthority('USER_EMAIL')")
+public @interface CanChangeEmailUser {
 }

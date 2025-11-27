@@ -9,6 +9,6 @@ import org.springframework.security.access.prepost.PreAuthorize;
 
 @Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)
-@PreAuthorize("hasAuthority('USER_UPDATE')")
-public @interface CanUpdateUser {
+@PreAuthorize("hasAuthority('USER_PASSWORD')")
+public @interface CanChangePasswordUser {
 }

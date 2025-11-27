@@ -9,6 +9,9 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public enum Role {
     USER(Set.of(
+            Permission.USER_PASSWORD,
+            Permission.USER_EMAIL,
+
             Permission.CATEGORY_READ,
 
             Permission.EVENT_READ,
@@ -19,6 +22,9 @@ public enum Role {
             Permission.EVENT_REGISTRATION_DELETE)),
 
     MANAGER(Set.of(
+            Permission.USER_PASSWORD,
+            Permission.USER_EMAIL,
+
             Permission.CATEGORY_READ,
             Permission.CATEGORY_CREATE,
             Permission.CATEGORY_UPDATE,

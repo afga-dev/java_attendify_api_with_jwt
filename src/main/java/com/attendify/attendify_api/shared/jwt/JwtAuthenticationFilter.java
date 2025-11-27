@@ -1,14 +1,17 @@
 package com.attendify.attendify_api.shared.jwt;
 
 import java.io.IOException;
+import java.util.List;
 
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
+
+import com.attendify.attendify_api.user.model.User;
+import com.attendify.attendify_api.user.repository.UserRepository;
+import com.attendify.attendify_api.user.security.CustomUserDetails;
 
 import io.jsonwebtoken.JwtException;
 import jakarta.servlet.FilterChain;
@@ -20,8 +23,13 @@ import lombok.RequiredArgsConstructor;
 @Component
 @RequiredArgsConstructor
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
+
     private final JwtService jwtService;
-    private final UserDetailsService userDetailsService;
+    private final UserRepository userRepository;
+
+    private static final List<String> PUBLIC_ENDPOINTS = List.of(
+            "/attendify/v1/auth/login",
+            "/attendify/v1/auth/register");
 
     @Override
     protected void doFilterInternal(
@@ -29,7 +37,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             HttpServletResponse response,
             FilterChain filterChain) throws ServletException, IOException {
 
-        if (request.getServletPath().startsWith("/attendify/v1/auth")) {
+        if (PUBLIC_ENDPOINTS.contains(request.getServletPath())) {
             filterChain.doFilter(request, response);
             return;
         }
@@ -41,21 +49,39 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         }
 
         final String jwt = authHeader.substring(SecurityConstants.BEARER_PREFIX.length());
-        String username;
+
+        String subject;
         try {
-            username = jwtService.extractUsername(jwt);
+            subject = jwtService.extractSubject(jwt);
         } catch (JwtException e) {
             filterChain.doFilter(request, response);
             return;
         }
 
-        if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
-            UserDetails userDetails = userDetailsService.loadUserByUsername(username);
-            if (jwtService.isTokenValid(jwt, userDetails)) {
+        if (subject != null && SecurityContextHolder.getContext().getAuthentication() == null) {
+
+            Long userId;
+            try {
+                userId = Long.valueOf(subject);
+            } catch (NumberFormatException ex) {
+                filterChain.doFilter(request, response);
+                return;
+            }
+
+            User user = userRepository.findById(userId).orElse(null);
+            if (user == null) {
+                filterChain.doFilter(request, response);
+                return;
+            }
+
+            CustomUserDetails customUserDetails = new CustomUserDetails(user);
+
+            if (jwtService.isTokenValid(jwt, customUserDetails)) {
                 UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
-                        userDetails,
+                        customUserDetails,
                         null,
-                        userDetails.getAuthorities());
+                        customUserDetails.getAuthorities());
+
                 authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
                 SecurityContextHolder.getContext().setAuthentication(authToken);
             }
@@ -63,5 +89,4 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
         filterChain.doFilter(request, response);
     }
-
 }

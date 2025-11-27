@@ -1,4 +1,4 @@
-package com.attendify.attendify_api.shared.annotation.user;
+package com.attendify.attendify_api.shared.annotation.role;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -9,6 +9,6 @@ import org.springframework.security.access.prepost.PreAuthorize;
 
 @Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)
-@PreAuthorize("hasAuthority('USER_DELETE')")
-public @interface CanDeleteUser {
+@PreAuthorize("hasRole('ADMIN')")
+public @interface AdminOnly {
 }
