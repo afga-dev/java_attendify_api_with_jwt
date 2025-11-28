@@ -2,7 +2,7 @@ package com.attendify.attendify_api.user.dto;
 
 import java.util.Set;
 
-import com.attendify.attendify_api.user.model.Role;
+import com.attendify.attendify_api.user.model.enums.Role;
 
 import lombok.Builder;
 import lombok.Data;

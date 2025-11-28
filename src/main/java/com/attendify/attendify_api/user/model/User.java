@@ -8,6 +8,7 @@ import org.hibernate.annotations.SQLRestriction;
 import com.attendify.attendify_api.auth.model.Token;
 import com.attendify.attendify_api.event.model.EventRegistration;
 import com.attendify.attendify_api.shared.audit.SoftDeletableEntity;
+import com.attendify.attendify_api.user.model.enums.Role;
 
 import jakarta.persistence.CollectionTable;
 import jakarta.persistence.Column;

@@ -53,7 +53,7 @@ public class AuthenticationController {
     }
 
     @PostMapping("/refresh")
-    public ResponseEntity<AuthenticationResponseDTO> refresh(HttpServletRequest request) {
+    public ResponseEntity<?> refresh(HttpServletRequest request) {
         String authHeader = request.getHeader(SecurityConstants.AUTHORIZATION_HEADER);
 
         AuthenticationResponseDTO authResponse = authenticationService.refresh(authHeader);

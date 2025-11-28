@@ -1,4 +1,4 @@
-package com.attendify.attendify_api.auth.model;
+package com.attendify.attendify_api.auth.model.enums;
 
 public enum ChangeResult {
     SUCCESS,

@@ -1,4 +1,4 @@
-package com.attendify.attendify_api.shared.annotation.eventregistration;
+package com.attendify.attendify_api.shared.annotation.user;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -9,6 +9,6 @@ import org.springframework.security.access.prepost.PreAuthorize;
 
 @Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)
-@PreAuthorize("hasAuthority('EVENT_REGISTRATION_READ_ADMIN')")
-public @interface CanReadAdminEventRegistration {
+@PreAuthorize("hasAuthority('USER_READ')")
+public @interface CanReadUser {
 }

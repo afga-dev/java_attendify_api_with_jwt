@@ -3,8 +3,8 @@ package com.attendify.attendify_api.event.dto;
 import java.time.LocalDateTime;
 import java.util.Set;
 
-import com.attendify.attendify_api.event.model.EventLocation;
-import com.attendify.attendify_api.event.model.EventStatus;
+import com.attendify.attendify_api.event.model.enums.EventLocation;
+import com.attendify.attendify_api.event.model.enums.EventStatus;
 
 import lombok.Builder;
 

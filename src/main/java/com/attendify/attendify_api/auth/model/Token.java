@@ -1,5 +1,7 @@
 package com.attendify.attendify_api.auth.model;
 
+import com.attendify.attendify_api.auth.model.enums.TokenPurpose;
+import com.attendify.attendify_api.auth.model.enums.TokenType;
 import com.attendify.attendify_api.shared.audit.SoftDeletableEntity;
 import com.attendify.attendify_api.user.model.User;
 

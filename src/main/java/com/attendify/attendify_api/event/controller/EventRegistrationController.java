@@ -18,11 +18,9 @@ import com.attendify.attendify_api.event.dto.EventRegistrationResponseDTO;
 import com.attendify.attendify_api.event.service.EventRegistrationService;
 import com.attendify.attendify_api.shared.annotation.eventregistration.CanCreateEventRegistration;
 import com.attendify.attendify_api.shared.annotation.eventregistration.CanDeleteEventRegistration;
-import com.attendify.attendify_api.shared.annotation.eventregistration.CanReadAdminEventRegistration;
-import com.attendify.attendify_api.shared.annotation.eventregistration.CanReadDeletedEventRegistration;
 import com.attendify.attendify_api.shared.annotation.eventregistration.CanReadEventRegistration;
-import com.attendify.attendify_api.shared.annotation.eventregistration.CanRestoreEventRegistration;
 import com.attendify.attendify_api.shared.annotation.eventregistration.CanUpdateEventRegistration;
+import com.attendify.attendify_api.shared.annotation.role.AdminOnly;
 import com.attendify.attendify_api.shared.dto.PageResponseDTO;
 
 import jakarta.validation.Valid;
@@ -53,7 +51,7 @@ public class EventRegistrationController {
     }
 
     @PutMapping("/{id}/restore")
-    @CanRestoreEventRegistration
+    @AdminOnly
     public ResponseEntity<Void> restoreRegistration(
             @PathVariable Long id) {
         eventRegistrationService.restore(id);
@@ -71,28 +69,28 @@ public class EventRegistrationController {
     }
 
     @GetMapping("/event/{eventId}")
-    @CanReadAdminEventRegistration
+    @AdminOnly
     public ResponseEntity<PageResponseDTO<EventRegistrationResponseDTO>> getUsersByEvent(
             @PathVariable Long eventId,
             Pageable pageable) {
         return ResponseEntity.ok(eventRegistrationService.getUsersByEvent(eventId, pageable));
     }
 
-    @GetMapping("/my")
+    @GetMapping("/me")
     @CanReadEventRegistration
     public ResponseEntity<PageResponseDTO<EventRegistrationResponseDTO>> getMyEvents(Pageable pageable) {
         return ResponseEntity.ok(eventRegistrationService.getMyEvents(pageable));
     }
 
     @GetMapping("/deleted")
-    @CanReadDeletedEventRegistration
+    @AdminOnly
     public ResponseEntity<PageResponseDTO<EventRegistrationResponseDTO>> getAllEventRegistrationsDeleted(
             Pageable pageable) {
         return ResponseEntity.ok(eventRegistrationService.findAllDeleted(pageable));
     }
 
-    @GetMapping("/including-deleted")
-    @CanReadDeletedEventRegistration
+    @GetMapping("/all")
+    @AdminOnly
     public ResponseEntity<PageResponseDTO<EventRegistrationResponseDTO>> getAllEventRegistrationsIncludingDeleted(
             Pageable pageable) {
         return ResponseEntity.ok(eventRegistrationService.findAllIncludingDeleted(pageable));

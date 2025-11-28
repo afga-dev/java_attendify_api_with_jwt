@@ -1,6 +1,6 @@
 package com.attendify.attendify_api.event.dto;
 
-import com.attendify.attendify_api.event.model.EventLocation;
+import com.attendify.attendify_api.event.model.enums.EventLocation;
 
 public record EventFilter(
     String text,

@@ -9,7 +9,7 @@ import javax.crypto.SecretKey;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
-import com.attendify.attendify_api.auth.model.TokenPurpose;
+import com.attendify.attendify_api.auth.model.enums.TokenPurpose;
 import com.attendify.attendify_api.shared.config.JwtProperties;
 import com.attendify.attendify_api.user.security.CustomUserDetails;
 

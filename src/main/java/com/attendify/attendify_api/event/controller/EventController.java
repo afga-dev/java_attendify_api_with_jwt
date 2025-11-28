@@ -20,10 +20,9 @@ import com.attendify.attendify_api.event.dto.EventSimpleDTO;
 import com.attendify.attendify_api.event.service.EventService;
 import com.attendify.attendify_api.shared.annotation.event.CanCreateEvent;
 import com.attendify.attendify_api.shared.annotation.event.CanDeleteEvent;
-import com.attendify.attendify_api.shared.annotation.event.CanReadDeletedEvent;
 import com.attendify.attendify_api.shared.annotation.event.CanReadEvent;
-import com.attendify.attendify_api.shared.annotation.event.CanRestoreEvent;
 import com.attendify.attendify_api.shared.annotation.event.CanUpdateEvent;
+import com.attendify.attendify_api.shared.annotation.role.AdminOnly;
 import com.attendify.attendify_api.shared.dto.PageResponseDTO;
 
 import jakarta.validation.Valid;
@@ -64,7 +63,7 @@ public class EventController {
     }
 
     @PutMapping("/{id}/restore")
-    @CanRestoreEvent
+    @AdminOnly
     public ResponseEntity<Void> restoreEvent(
             @PathVariable Long id) {
         eventService.restore(id);
@@ -96,14 +95,14 @@ public class EventController {
     }
 
     @GetMapping("/deleted")
-    @CanReadDeletedEvent
+    @AdminOnly
     public ResponseEntity<PageResponseDTO<EventSimpleDTO>> getAllEventsDeleted(
             Pageable pageable) {
         return ResponseEntity.ok(eventService.findAllDeleted(pageable));
     }
 
-    @GetMapping("/including-deleted")
-    @CanReadDeletedEvent
+    @GetMapping("/all")
+    @AdminOnly
     public ResponseEntity<PageResponseDTO<EventSimpleDTO>> getByCategoryIncludingDeleted(
             Pageable pageable) {
         return ResponseEntity.ok(eventService.findAllIncludingDeleted(pageable));

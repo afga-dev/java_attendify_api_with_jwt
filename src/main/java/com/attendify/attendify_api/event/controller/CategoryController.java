@@ -20,9 +20,8 @@ import com.attendify.attendify_api.event.service.CategoryService;
 import com.attendify.attendify_api.shared.annotation.category.CanCreateCategory;
 import com.attendify.attendify_api.shared.annotation.category.CanDeleteCategory;
 import com.attendify.attendify_api.shared.annotation.category.CanReadCategory;
-import com.attendify.attendify_api.shared.annotation.category.CanReadDeletedCategory;
-import com.attendify.attendify_api.shared.annotation.category.CanRestoreCategory;
 import com.attendify.attendify_api.shared.annotation.category.CanUpdateCategory;
+import com.attendify.attendify_api.shared.annotation.role.AdminOnly;
 import com.attendify.attendify_api.shared.dto.PageResponseDTO;
 
 import jakarta.validation.Valid;
@@ -63,7 +62,7 @@ public class CategoryController {
     }
 
     @PutMapping("/{id}/restore")
-    @CanRestoreCategory
+    @AdminOnly
     public ResponseEntity<Void> restoreCategory(
             @PathVariable Long id) {
         categoryService.restore(id);
@@ -86,14 +85,14 @@ public class CategoryController {
     }
 
     @GetMapping("/deleted")
-    @CanReadDeletedCategory
+    @AdminOnly
     public ResponseEntity<PageResponseDTO<CategorySimpleDTO>> getAllCategoriesDeleted(
             Pageable pageable) {
         return ResponseEntity.ok(categoryService.findAllDeleted(pageable));
     }
 
-    @GetMapping("/including-deleted")
-    @CanReadDeletedCategory
+    @GetMapping("/all")
+    @AdminOnly
     public ResponseEntity<PageResponseDTO<CategorySimpleDTO>> getAllCategoriesIncludingDeleted(
             Pageable pageable) {
         return ResponseEntity.ok(categoryService.findAllIncludingDeleted(pageable));

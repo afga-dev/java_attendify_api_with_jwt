@@ -8,7 +8,7 @@ import org.springframework.context.annotation.Configuration;
 
 import com.attendify.attendify_api.auth.dto.RegisterAdminRequestDTO;
 import com.attendify.attendify_api.auth.service.AuthenticationService;
-import com.attendify.attendify_api.user.model.Role;
+import com.attendify.attendify_api.user.model.enums.Role;
 import com.attendify.attendify_api.user.repository.UserRepository;
 
 import lombok.RequiredArgsConstructor;

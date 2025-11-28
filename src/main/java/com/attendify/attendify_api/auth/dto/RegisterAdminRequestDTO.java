@@ -3,7 +3,7 @@ package com.attendify.attendify_api.auth.dto;
 import java.util.Set;
 
 import com.attendify.attendify_api.shared.validation.Sanitize;
-import com.attendify.attendify_api.user.model.Role;
+import com.attendify.attendify_api.user.model.enums.Role;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;

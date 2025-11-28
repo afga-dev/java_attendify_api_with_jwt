@@ -6,6 +6,8 @@ import java.util.Set;
 
 import org.hibernate.annotations.SQLRestriction;
 
+import com.attendify.attendify_api.event.model.enums.EventLocation;
+import com.attendify.attendify_api.event.model.enums.EventStatus;
 import com.attendify.attendify_api.shared.audit.SoftDeletableEntity;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
