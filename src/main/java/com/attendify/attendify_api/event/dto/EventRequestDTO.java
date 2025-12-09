@@ -3,14 +3,16 @@ package com.attendify.attendify_api.event.dto;
 import java.time.LocalDateTime;
 import java.util.Set;
 
-import com.attendify.attendify_api.event.model.enums.EventLocation;
-import com.attendify.attendify_api.event.model.enums.EventStatus;
+import com.attendify.attendify_api.event.entity.enums.EventLocation;
+import com.attendify.attendify_api.event.entity.enums.EventStatus;
 import com.attendify.attendify_api.shared.validation.Sanitize;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
+import lombok.Builder;
 
+@Builder
 public record EventRequestDTO(
         @NotBlank(message = "Title is required") @Sanitize String title,
 

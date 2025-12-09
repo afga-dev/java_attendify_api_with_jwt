@@ -2,7 +2,7 @@ package com.attendify.attendify_api.event.dto;
 
 import java.time.LocalDateTime;
 
-import com.attendify.attendify_api.event.model.enums.EventStatus;
+import com.attendify.attendify_api.event.entity.enums.EventStatus;
 
 import lombok.Builder;
 

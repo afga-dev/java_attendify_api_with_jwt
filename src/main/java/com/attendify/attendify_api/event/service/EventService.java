@@ -2,7 +2,7 @@ package com.attendify.attendify_api.event.service;
 
 import org.springframework.data.domain.Pageable;
 
-import com.attendify.attendify_api.event.dto.EventFilter;
+import com.attendify.attendify_api.event.dto.EventFilterDTO;
 import com.attendify.attendify_api.event.dto.EventRequestDTO;
 import com.attendify.attendify_api.event.dto.EventResponseDTO;
 import com.attendify.attendify_api.event.dto.EventSimpleDTO;
@@ -19,11 +19,11 @@ public interface EventService {
 
     EventResponseDTO findById(Long id);
 
-    PageResponseDTO<EventSimpleDTO> findAll(EventFilter EventFilter, Pageable pageable);
+    PageResponseDTO<EventSimpleDTO> findAll(EventFilterDTO EventFilter, Pageable pageable);
 
     PageResponseDTO<EventSimpleDTO> findByCategory(Long categoryId, Pageable pageable);
 
     PageResponseDTO<EventSimpleDTO> findAllDeleted(Pageable pageable);
 
-    PageResponseDTO<EventSimpleDTO> findAllIncludingDeleted(Pageable pageable);
+    PageResponseDTO<EventSimpleDTO> findAllWithDeleted(Pageable pageable);
 }

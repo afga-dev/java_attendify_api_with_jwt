@@ -1,30 +1,40 @@
 spring:
     config:
-        import: optional:file:.env[.properties]
-    datasource:
-        url: jdbc:postgresql://${SPRING_DATASOURCE_HOST}:${SPRING_DATASOURCE_PORT}/${SPRING_DATASOURCE_DB}
-        username: ${SPRING_DATASOURCE_USERNAME}
-        password: ${SPRING_DATASOURCE_PASSWORD}
-        driver-class-name: org.postgresql.Driver
+        import: 'optional:file:.env[.properties]'
 
     jpa:
-        hibernate:
-            ddl-auto: create-drop
         show-sql: true
+        open-in-view: false # Disable Open Session in View to avoid lazy-loading issues outside transactions
         properties:
             hibernate:
                 format_sql: true
-                dialect: org.hibernate.dialect.PostgreSQLDialect
 
     data:
         web:
             pageable:
-                default-page-size: 10
-                max-page-size: 50
+                default-page-size: 10 # Default number of items per page for pagination
+                max-page-size: 50 # Maximum allowed items per page
 
 application:
     security:
         jwt:
-            secret-key: iDf5B8bkGtAIhB0IHnSzomfqHpM7wtfuAkdomX9aY5AN8yNuXZNZzz8c2B6pgGUK52mfgbnvqL1dFtId9IwnRQ==
-            access-expiration-ms: 900000 #15 minutes
-            refresh-expiration-ms: 604800000 #7 days
+            secret-key: '${JWT_SECRET}'
+            access-expiration-ms: 900000 # Access token expiration (15 minutes)
+            refresh-expiration-ms: 604800000 # Refresh token expiration (7 days)
+
+    bootstrap:
+        admin:
+            enabled: false
+            email: '${ADMIN_BOOTSTRAP_USERNAME}'
+            password: '${ADMIN_BOOTSTRAP_PASSWORD}'
+
+logging:
+    level:
+        org:
+            springframework:
+                security: 'OFF'
+                config:
+                annotation: null
+                authentication:
+                    configuration:
+                        InitializeUserDetailsBeanManagerConfigurer: ERROR

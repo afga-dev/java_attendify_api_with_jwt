@@ -21,5 +21,5 @@ public interface EventRegistrationService {
 
     PageResponseDTO<EventRegistrationResponseDTO> findAllDeleted(Pageable pageable);
 
-    PageResponseDTO<EventRegistrationResponseDTO> findAllIncludingDeleted(Pageable pageable);
+    PageResponseDTO<EventRegistrationResponseDTO> findAllWithDeleted(Pageable pageable);
 }

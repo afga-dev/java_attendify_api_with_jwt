@@ -1,0 +1,15 @@
+spring:
+    datasource:
+        url: jdbc:postgresql://${SPRING_DATASOURCE_HOST}:${SPRING_DATASOURCE_PORT}/${SPRING_DATASOURCE_DB}
+        username: '${SPRING_DATASOURCE_USERNAME}'
+        password: '${SPRING_DATASOURCE_PASSWORD}'
+
+    jpa:
+        hibernate:
+            ddl-auto: create-drop
+        show-sql: true
+
+application:
+    bootstrap:
+        admin:
+            enabled: true

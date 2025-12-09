@@ -2,17 +2,18 @@ package com.attendify.attendify_api.user.service.impl;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.attendify.attendify_api.auth.repository.TokenRepository;
 import com.attendify.attendify_api.shared.dto.PageResponseDTO;
+import com.attendify.attendify_api.shared.exception.BadRequestException;
 import com.attendify.attendify_api.shared.exception.NotFoundException;
+import com.attendify.attendify_api.shared.security.SecurityUtils;
 import com.attendify.attendify_api.user.dto.UserSummaryDTO;
+import com.attendify.attendify_api.user.entity.User;
 import com.attendify.attendify_api.user.mapper.UserMapper;
-import com.attendify.attendify_api.user.model.User;
 import com.attendify.attendify_api.user.repository.UserRepository;
-import com.attendify.attendify_api.user.security.CustomUserDetails;
 import com.attendify.attendify_api.user.service.UserService;
 
 import lombok.RequiredArgsConstructor;
@@ -23,49 +24,53 @@ public class UserServiceImpl implements UserService {
     private final UserMapper userMapper;
     private final UserRepository userRepository;
     private final TokenRepository tokenRepository;
+    private final SecurityUtils securityUtils;
 
     @Override
+    @Transactional(readOnly = true)
     public UserSummaryDTO getMyUser() {
-        Long userId = getAuthenticatedUserId();
-
-        User user = getUserOrElseThrow(userId);
+        User user = securityUtils.getAuthenticatedUser();
 
         return userMapper.toSummary(user);
     }
 
     @Override
+    @Transactional(readOnly = true)
+    public UserSummaryDTO getUser(Long id) {
+        User user = getUserWithDeletedOrElseThrow(id);
+
+        return userMapper.toSummary(user);
+    }
+
+    @Override
+    @Transactional
     public void delete() {
-        Long userId = getAuthenticatedUserId();
+        User user = securityUtils.getAuthenticatedUser();
 
-        User user = getUserOrElseThrow(userId);
-
-        user.softDelete(userId);
-
-        tokenRepository.revokeAllUserTokens(user.getId());
-
-        userRepository.save(user);
+        softDeleteUser(user);
     }
 
     @Override
+    @Transactional
     public void delete(Long id) {
-        User user = getUserIncludingDeletedOrElseThrow(id);
+        User user = getUserWithDeletedOrElseThrow(id);
 
-        if (user.getDeleteAt() != null)
-            throw new IllegalStateException("User is deleted");
+        if (user.getDeletedAt() != null)
+            throw new BadRequestException("User is deleted");
 
-        user.softDelete(id);
+        if (user.getId().equals(securityUtils.getAuthenticatedUserId()))
+            throw new BadRequestException("You cannot delete your own account via admin method");
 
-        tokenRepository.revokeAllUserTokens(user.getId());
-
-        userRepository.save(user);
+        softDeleteUser(user);
     }
 
     @Override
+    @Transactional
     public void restore(Long id) {
-        User user = getUserIncludingDeletedOrElseThrow(id);
+        User user = getUserWithDeletedOrElseThrow(id);
 
-        if (user.getDeleteAt() == null)
-            throw new IllegalStateException("User is not deleted");
+        if (user.getDeletedAt() == null)
+            throw new BadRequestException("User is not deleted");
 
         user.restore();
 
@@ -73,6 +78,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public PageResponseDTO<UserSummaryDTO> findAll(Pageable pageable) {
         Page<User> page = userRepository.findAll(pageable);
 
@@ -80,6 +86,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public PageResponseDTO<UserSummaryDTO> findAllDeleted(Pageable pageable) {
         Page<User> page = userRepository.findAllDeleted(pageable);
 
@@ -87,25 +94,23 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public PageResponseDTO<UserSummaryDTO> findAllIncludingDeleted(Pageable pageable) {
-        Page<User> page = userRepository.findAllIncludingDeleted(pageable);
+    @Transactional(readOnly = true)
+    public PageResponseDTO<UserSummaryDTO> findAllWithDeleted(Pageable pageable) {
+        Page<User> page = userRepository.findAllWithDeleted(pageable);
 
         return userMapper.toPageResponse(page);
     }
 
-    private Long getAuthenticatedUserId() {
-        var authentication = SecurityContextHolder.getContext().getAuthentication();
-        var principal = (CustomUserDetails) authentication.getPrincipal();
-        return principal.getId();
+    // Helper that fetch an user including soft-deleted
+    private User getUserWithDeletedOrElseThrow(Long id) {
+        return userRepository.findByIdWithDeleted(id)
+                .orElseThrow(() -> new NotFoundException("User not found"));
     }
 
-    private User getUserOrElseThrow(Long id) {
-        return userRepository.findById(id)
-                .orElseThrow(() -> new NotFoundException("User with id '" + id + "' not found"));
-    }
-
-    private User getUserIncludingDeletedOrElseThrow(Long id) {
-        return userRepository.findByIdAll(id)
-                .orElseThrow(() -> new NotFoundException("User with id '" + id + "' not found"));
+    // Helper that performs soft deletion and revokes all tokens for the user
+    private void softDeleteUser(User user) {
+        user.softDelete(user.getId());
+        tokenRepository.revokeAllUserTokens(user.getId());
+        userRepository.save(user);
     }
 }

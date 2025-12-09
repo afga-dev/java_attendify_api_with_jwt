@@ -9,7 +9,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
-import com.attendify.attendify_api.user.model.User;
+import com.attendify.attendify_api.user.entity.User;
 
 @Repository
 public interface UserRepository extends JpaRepository<User, Long> {
@@ -17,12 +17,15 @@ public interface UserRepository extends JpaRepository<User, Long> {
 
     boolean existsByEmail(String email);
 
+    // Fetch an user by ID, including soft-deleted entries
     @Query(value = "SELECT * FROM users WHERE user_id = :id", nativeQuery = true)
-    Optional<User> findByIdAll(@Param("id") Long id);
+    Optional<User> findByIdWithDeleted(@Param("id") Long id);
 
+    // Fetch all users that have been soft-deleted
     @Query(value = "SELECT * FROM users WHERE deleted_at IS NOT NULL", nativeQuery = true)
     Page<User> findAllDeleted(Pageable pageable);
 
+    // Fetch all users, including both active and soft-deleted
     @Query(value = "SELECT * FROM users", nativeQuery = true)
-    Page<User> findAllIncludingDeleted(Pageable pageable);
+    Page<User> findAllWithDeleted(Pageable pageable);
 }

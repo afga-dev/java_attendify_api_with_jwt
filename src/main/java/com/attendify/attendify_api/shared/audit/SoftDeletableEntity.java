@@ -12,18 +12,20 @@ import lombok.Setter;
 @MappedSuperclass
 public class SoftDeletableEntity extends AuditableEntity {
     @Column(name = "deleted_at")
-    private LocalDateTime deleteAt;
+    private LocalDateTime deletedAt;
 
     @Column(name = "deleted_by")
-    private Long deleteBy;
+    private Long deletedBy;
 
     public void softDelete(Long userId) {
-        this.deleteAt = LocalDateTime.now();
-        this.deleteBy = userId;
+        if (this.deletedAt == null) {
+            this.deletedAt = LocalDateTime.now();
+            this.deletedBy = userId;
+        }
     }
 
     public void restore() {
-        this.deleteAt = null;
-        this.deleteBy = null;
+        this.deletedAt = null;
+        this.deletedBy = null;
     }
 }

@@ -3,8 +3,9 @@ package com.attendify.attendify_api.event.dto;
 import java.time.LocalDateTime;
 import java.util.Set;
 
-import com.attendify.attendify_api.event.model.enums.EventLocation;
-import com.attendify.attendify_api.event.model.enums.EventStatus;
+import com.attendify.attendify_api.event.entity.enums.EventLocation;
+import com.attendify.attendify_api.event.entity.enums.EventStatus;
+import com.attendify.attendify_api.user.dto.UserSummaryDTO;
 
 import lombok.Builder;
 
@@ -18,6 +19,6 @@ public record EventResponseDTO(
         EventLocation location,
         Integer capacity,
         EventStatus status,
-        Set<Long> registeredUserIds,
-        Set<Long> categoryIds) {
+        Set<UserSummaryDTO> registeredUsers,
+        Set<CategorySimpleDTO> categories) {
 }

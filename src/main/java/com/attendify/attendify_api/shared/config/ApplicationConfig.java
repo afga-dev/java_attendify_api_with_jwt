@@ -10,7 +10,7 @@ import org.springframework.security.config.annotation.authentication.configurati
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
-import com.attendify.attendify_api.user.security.CustomUserDetailsService;
+import com.attendify.attendify_api.shared.security.CustomUserDetailsService;
 
 import lombok.RequiredArgsConstructor;
 
@@ -20,6 +20,7 @@ public class ApplicationConfig {
     private final CustomUserDetailsService customUserDetailsService;
 
     @Bean
+    // Provides the AuthenticationManager bean used by Spring Security for authentication
     public AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration)
             throws Exception {
         return authenticationConfiguration.getAuthenticationManager();
@@ -27,14 +28,19 @@ public class ApplicationConfig {
 
     @Bean
     @Primary
+    // Configures a DaoAuthenticationProvider using the custom UserDetailsService and password encoder
     public AuthenticationProvider authenticationProvider() {
         DaoAuthenticationProvider daoAuthenticationProvider = new DaoAuthenticationProvider();
+
         daoAuthenticationProvider.setUserDetailsService(customUserDetailsService);
         daoAuthenticationProvider.setPasswordEncoder(passwordEncoder());
+        daoAuthenticationProvider.setHideUserNotFoundExceptions(false);
+
         return daoAuthenticationProvider;
     }
 
     @Bean
+    // PasswordEncoder bean using BCrypt for secure password hashing
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }

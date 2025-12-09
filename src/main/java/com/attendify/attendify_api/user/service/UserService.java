@@ -8,6 +8,8 @@ import com.attendify.attendify_api.user.dto.UserSummaryDTO;
 public interface UserService {
     UserSummaryDTO getMyUser();
 
+    UserSummaryDTO getUser(Long id);
+
     void delete();
 
     void delete(Long id);
@@ -18,5 +20,5 @@ public interface UserService {
 
     PageResponseDTO<UserSummaryDTO> findAllDeleted(Pageable pageable);
 
-    PageResponseDTO<UserSummaryDTO> findAllIncludingDeleted(Pageable pageable);
+    PageResponseDTO<UserSummaryDTO> findAllWithDeleted(Pageable pageable);
 }

@@ -4,13 +4,15 @@ import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Component;
 
 import com.attendify.attendify_api.event.dto.EventRegistrationResponseDTO;
-import com.attendify.attendify_api.event.model.Event;
-import com.attendify.attendify_api.event.model.EventRegistration;
+import com.attendify.attendify_api.event.entity.Event;
+import com.attendify.attendify_api.event.entity.EventRegistration;
 import com.attendify.attendify_api.shared.dto.PageResponseDTO;
-import com.attendify.attendify_api.user.model.User;
+import com.attendify.attendify_api.shared.mapper.PageMappingUtils;
+import com.attendify.attendify_api.user.entity.User;
 
 @Component
 public class EventRegistrationMapper {
+    // Converts DTO to new EventRegistration entity
     public EventRegistration toEntity(User user, Event event) {
         return EventRegistration.builder()
                 .user(user)
@@ -19,6 +21,7 @@ public class EventRegistrationMapper {
                 .build();
     }
 
+    // Converts entity to detailed response DTO
     public EventRegistrationResponseDTO toResponse(EventRegistration eventRegistration) {
         return EventRegistrationResponseDTO.builder()
                 .id(eventRegistration.getId())
@@ -29,16 +32,8 @@ public class EventRegistrationMapper {
                 .build();
     }
 
+    // Converts a Spring Page of entities to a standardized paginated response
     public PageResponseDTO<EventRegistrationResponseDTO> toPageResponse(Page<EventRegistration> page) {
-        return PageResponseDTO.<EventRegistrationResponseDTO>builder()
-                .items(page.getContent().stream()
-                        .map(this::toResponse)
-                        .toList())
-                .page(page.getNumber())
-                .size(page.getSize())
-                .totalItems(page.getTotalElements())
-                .totalPages(page.getTotalPages())
-                .isLast(page.isLast())
-                .build();
+        return PageMappingUtils.toPageResponse(page, this::toResponse);
     }
 }

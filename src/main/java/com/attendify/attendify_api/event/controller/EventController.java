@@ -4,8 +4,10 @@ import java.net.URI;
 
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -13,16 +15,11 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.attendify.attendify_api.event.dto.EventFilter;
+import com.attendify.attendify_api.event.dto.EventFilterDTO;
 import com.attendify.attendify_api.event.dto.EventRequestDTO;
 import com.attendify.attendify_api.event.dto.EventResponseDTO;
 import com.attendify.attendify_api.event.dto.EventSimpleDTO;
 import com.attendify.attendify_api.event.service.EventService;
-import com.attendify.attendify_api.shared.annotation.event.CanCreateEvent;
-import com.attendify.attendify_api.shared.annotation.event.CanDeleteEvent;
-import com.attendify.attendify_api.shared.annotation.event.CanReadEvent;
-import com.attendify.attendify_api.shared.annotation.event.CanUpdateEvent;
-import com.attendify.attendify_api.shared.annotation.role.AdminOnly;
 import com.attendify.attendify_api.shared.dto.PageResponseDTO;
 
 import jakarta.validation.Valid;
@@ -35,16 +32,17 @@ public class EventController {
     private final EventService eventService;
 
     @PostMapping
-    @CanCreateEvent
+    @PreAuthorize("hasAuthority('EVENT_CREATE')")
     public ResponseEntity<EventResponseDTO> createEvent(
             @Valid @RequestBody EventRequestDTO dto) {
         EventResponseDTO created = eventService.create(dto);
 
+        // Returns 201 Created with URI pointing to new resource
         return ResponseEntity.created(URI.create("/attendify/v1/events/" + created.id())).body(created);
     }
 
     @PutMapping("/{id}")
-    @CanUpdateEvent
+    @PreAuthorize("hasAuthority('EVENT_UPDATE')")
     public ResponseEntity<EventResponseDTO> updateEvent(
             @PathVariable Long id,
             @Valid @RequestBody EventRequestDTO dto) {
@@ -54,40 +52,39 @@ public class EventController {
     }
 
     @DeleteMapping("/{id}")
-    @CanDeleteEvent
+    @PreAuthorize("hasAuthority('EVENT_DELETE')")
     public ResponseEntity<Void> deleteEvent(
             @PathVariable Long id) {
         eventService.delete(id);
 
+        // No content returned after successful deletion
         return ResponseEntity.noContent().build();
     }
 
     @PutMapping("/{id}/restore")
-    @AdminOnly
+    @PreAuthorize("hasAuthority('EVENT_RESTORE')")
     public ResponseEntity<Void> restoreEvent(
             @PathVariable Long id) {
         eventService.restore(id);
 
+        // No content returned after successful restoration
         return ResponseEntity.noContent().build();
     }
 
     @GetMapping("/{id}")
-    @CanReadEvent
     public ResponseEntity<EventResponseDTO> getEvent(
             @PathVariable Long id) {
         return ResponseEntity.ok(eventService.findById(id));
     }
 
     @GetMapping
-    @CanReadEvent
     public ResponseEntity<PageResponseDTO<EventSimpleDTO>> getAllEvents(
-            EventFilter eventFilter,
+            @ModelAttribute EventFilterDTO eventFilter,
             Pageable pageable) {
         return ResponseEntity.ok(eventService.findAll(eventFilter, pageable));
     }
 
-    @GetMapping("/category/{id}")
-    @CanReadEvent
+    @GetMapping("/{id}/category")
     public ResponseEntity<PageResponseDTO<EventSimpleDTO>> getByCategory(
             @PathVariable Long id,
             Pageable pageable) {
@@ -95,16 +92,16 @@ public class EventController {
     }
 
     @GetMapping("/deleted")
-    @AdminOnly
+    @PreAuthorize("hasAuthority('EVENT_READ_DELETED')")
     public ResponseEntity<PageResponseDTO<EventSimpleDTO>> getAllEventsDeleted(
             Pageable pageable) {
         return ResponseEntity.ok(eventService.findAllDeleted(pageable));
     }
 
-    @GetMapping("/all")
-    @AdminOnly
-    public ResponseEntity<PageResponseDTO<EventSimpleDTO>> getByCategoryIncludingDeleted(
+    @GetMapping("/with-deleted")
+    @PreAuthorize("hasAuthority('EVENT_READ_WITH_DELETED')")
+    public ResponseEntity<PageResponseDTO<EventSimpleDTO>> getAllWithDeleted(
             Pageable pageable) {
-        return ResponseEntity.ok(eventService.findAllIncludingDeleted(pageable));
+        return ResponseEntity.ok(eventService.findAllWithDeleted(pageable));
     }
 }

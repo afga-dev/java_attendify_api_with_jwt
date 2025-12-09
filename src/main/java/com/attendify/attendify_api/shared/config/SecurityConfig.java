@@ -15,7 +15,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 import org.springframework.web.cors.CorsConfiguration;
 
 import com.attendify.attendify_api.shared.exception.ErrorResponse;
-import com.attendify.attendify_api.shared.jwt.JwtAuthenticationFilter;
+import com.attendify.attendify_api.shared.security.jwt.JwtAuthFilter;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import jakarta.servlet.http.HttpServletResponse;
@@ -26,14 +26,16 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 @EnableMethodSecurity
 public class SecurityConfig {
-    private final JwtAuthenticationFilter jwtAuthenticationFilter;
+    private final JwtAuthFilter jwtAuthFilter;
     private final AuthenticationProvider authenticationProvider;
     private final ObjectMapper objectMapper;
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
         return httpSecurity
+                // Disable CSRF because JWT
                 .csrf(csrf -> csrf.disable())
+                // Configure CORS for frontend
                 .cors(cors -> cors.configurationSource(request -> {
                     var corsConfiguration = new CorsConfiguration();
                     corsConfiguration.setAllowedOrigins(List.of(
@@ -46,33 +48,42 @@ public class SecurityConfig {
                     corsConfiguration.setAllowCredentials(true);
                     return corsConfiguration;
                 }))
+                // Configure endpoint authorization
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/attendify/v1/auth/register", "/attendify/v1/auth/login")
+                        // Public endpoints
+                        .requestMatchers("/attendify/v1/auth/register", "/attendify/v1/auth/login",
+                                "/attendify/v1/auth/refresh-token")
                         .permitAll()
                         .requestMatchers("/error")
                         .permitAll()
+                        // All other requests require authentication
                         .anyRequest()
                         .authenticated())
+                // Stateless session management (JWT)
                 .sessionManagement(session -> session
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                // Use a custom authentication provider
                 .authenticationProvider(authenticationProvider)
-                .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
+                // Add JWT filter before the username/password filter
+                .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class)
+                // Custom handling for authentication and authorization errors
                 .exceptionHandling(ex -> ex
                         .authenticationEntryPoint((request, response, authException) -> {
-                            writeError(response,
+                            buildError(response,
                                     HttpServletResponse.SC_UNAUTHORIZED,
                                     "Unauthorized",
                                     "Invalid or expired token");
                         })
                         .accessDeniedHandler((request, response, e) -> {
-                            writeError(response, HttpServletResponse.SC_FORBIDDEN,
+                            buildError(response, HttpServletResponse.SC_FORBIDDEN,
                                     "Forbidden",
                                     "You don't have permission to access this resource");
                         }))
                 .build();
     }
 
-    private void writeError(
+    // Utility method to build JSON error responses
+    private void buildError(
             HttpServletResponse response,
             int status,
             String error,

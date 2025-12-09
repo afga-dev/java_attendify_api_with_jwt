@@ -9,7 +9,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
-import com.attendify.attendify_api.auth.model.Token;
+import com.attendify.attendify_api.auth.entity.Token;
 
 import jakarta.transaction.Transactional;
 
@@ -17,6 +17,7 @@ import jakarta.transaction.Transactional;
 public interface TokenRepository extends JpaRepository<Token, Long> {
     Optional<Token> findByToken(String token);
 
+    // Fetch all non-expired and non-revoked tokens for a specific user
     @Query("""
                 SELECT t FROM Token t
                 WHERE t.user.id = :id
@@ -25,6 +26,7 @@ public interface TokenRepository extends JpaRepository<Token, Long> {
             """)
     List<Token> findAllValidTokensByUser(@Param("id") Long id);
 
+    // Revoke all active refresh tokens for a specific user
     @Modifying
     @Transactional
     @Query("""

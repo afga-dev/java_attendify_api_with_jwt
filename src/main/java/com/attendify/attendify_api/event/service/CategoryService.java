@@ -22,5 +22,5 @@ public interface CategoryService {
 
     PageResponseDTO<CategorySimpleDTO> findAllDeleted(Pageable pageable);
 
-    PageResponseDTO<CategorySimpleDTO> findAllIncludingDeleted(Pageable pageable);
+    PageResponseDTO<CategorySimpleDTO> findAllWithDeleted(Pageable pageable);
 }

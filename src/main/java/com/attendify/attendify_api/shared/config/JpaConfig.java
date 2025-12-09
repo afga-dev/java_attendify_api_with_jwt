@@ -9,6 +9,7 @@ import com.attendify.attendify_api.shared.audit.SecurityAuditorAware;
 
 @Configuration
 @EnableJpaAuditing(auditorAwareRef = "auditorProvider")
+// Enables JPA auditing
 public class JpaConfig {
     @Bean
     public AuditorAware<Long> auditorProvider() {
