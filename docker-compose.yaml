@@ -1,19 +1,42 @@
 version: '3.9'
 
 services:
+    api:
+        build: .
+        container_name: attendify-api
+        restart: unless-stopped
+        ports:
+            - "${API_PORT}:${API_PORT}"
+        environment:
+            - SPRING_PROFILES_ACTIVE=dev
+            - SPRING_DATASOURCE_HOST=${SPRING_DATASOURCE_HOST}
+            - SPRING_DATASOURCE_PORT=${SPRING_DATASOURCE_PORT}
+            - SPRING_DATASOURCE_DB=${SPRING_DATASOURCE_DB}
+            - SPRING_DATASOURCE_USERNAME=${SPRING_DATASOURCE_USERNAME}
+            - SPRING_DATASOURCE_PASSWORD=${SPRING_DATASOURCE_PASSWORD}
+            - JWT_SECRET=${JWT_SECRET}
+            - ADMIN_BOOTSTRAP_USERNAME=${ADMIN_BOOTSTRAP_USERNAME}
+            - ADMIN_BOOTSTRAP_PASSWORD=${ADMIN_BOOTSTRAP_PASSWORD}
+        depends_on:
+            db:
+                condition: service_healthy
+        networks:
+            - attendify-network
+
     db:
         image: postgres:15-alpine
+        container_name: attendify-db
         restart: always
         environment:
             POSTGRES_USER: ${SPRING_DATASOURCE_USERNAME}
             POSTGRES_PASSWORD: ${SPRING_DATASOURCE_PASSWORD}
             POSTGRES_DB: ${SPRING_DATASOURCE_DB}
         ports:
-            - "${POSTGRES_PORT}:5432"
+            - "${SPRING_DATASOURCE_PORT}:${SPRING_DATASOURCE_PORT}"
         volumes:
             - postgres_data:/var/lib/postgresql/data
         healthcheck:
-            test: [ "CMD-SHELL", "pg_isready -U $POSTGRES_USER" ]
+            test: [ "CMD-SHELL", "pg_isready -U ${SPRING_DATASOURCE_USERNAME} -d ${SPRING_DATASOURCE_DB}" ]
             interval: 10s
             timeout: 5s
             retries: 5
